@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+#include <chrono>
 #include <utility>
 #include <memory>
 #include <deque>
@@ -10,9 +12,15 @@ enum class GestureState { POSSIBLE, START, END, TRIGGER };
 
 class Gesture {
  public:
-  Gesture();
-  Gesture(GestureState state);
+  Gesture(GestureState state = GestureState::START);
+  Gesture(const std::deque<std::shared_ptr<TouchPoint>>& tps,
+          GestureState state = GestureState::START);
   ~Gesture() = default;
+
+  const std::deque<std::shared_ptr<TouchPoint>> touch_points() const;
+
+  virtual bool finished() const;
+  virtual double time_finished() const;
 
  protected:
   Gesture(Gesture&& other) noexcept;

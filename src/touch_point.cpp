@@ -67,6 +67,29 @@ const Vec2& TouchPoint::pos() const {
   return m_pos;
 }
 
+const Vec2& TouchPoint::velocity() const {
+  return m_velocity;
+}
+
+const float TouchPoint::acceleration() const {
+  return m_acceleration;
+}
+
+std::chrono::time_point<std::chrono::high_resolution_clock>
+TouchPoint::start_time() const {
+  return m_start_time;
+}
+
+std::chrono::time_point<std::chrono::high_resolution_clock>
+TouchPoint::update_time() const {
+  return m_update_time;
+}
+
+std::chrono::time_point<std::chrono::high_resolution_clock>
+TouchPoint::end_time() const {
+  return m_end_time;
+}
+
 bool TouchPoint::finished() const {
   return m_end_time !=
          std::chrono::time_point<std::chrono::high_resolution_clock>::min();

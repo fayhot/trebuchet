@@ -26,6 +26,14 @@ class TouchPoint {
   uint32_t id() const;
   const Vec2& start_pos() const;
   const Vec2& pos() const;
+  const Vec2& velocity() const;
+  const float acceleration() const;
+
+  std::chrono::time_point<std::chrono::high_resolution_clock> start_time()
+      const;
+  std::chrono::time_point<std::chrono::high_resolution_clock> update_time()
+      const;
+  std::chrono::time_point<std::chrono::high_resolution_clock> end_time() const;
 
   bool finished() const;
   double duration() const;
