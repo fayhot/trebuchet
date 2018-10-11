@@ -38,6 +38,10 @@ TouchPoint& TouchPoint::operator=(TouchPoint&& other) noexcept {
   return *this;
 }
 
+bool TouchPoint::operator<(const TouchPoint& other) const {
+  return m_id < other.id();
+}
+
 void TouchPoint::update(const Vec2& pos,
                         const Vec2& velocity,
                         float acceleration) {

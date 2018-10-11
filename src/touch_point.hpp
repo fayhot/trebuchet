@@ -18,6 +18,8 @@ class TouchPoint {
   TouchPoint& operator=(const TouchPoint& other) = delete;
   TouchPoint& operator=(TouchPoint&& other) noexcept;
 
+  bool operator<(const TouchPoint& other) const;
+
   void update(const Vec2& pos, const Vec2& velocity, float acceleration);
   void end();
 
