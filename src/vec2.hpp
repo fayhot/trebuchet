@@ -6,6 +6,7 @@
 struct Vec2 {
   Vec2() = default;
   Vec2(double x, double y);
+  ~Vec2() = default;
 
   Vec2(const Vec2 &) = default;
   Vec2(Vec2 &&other) noexcept;
