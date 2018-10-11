@@ -1,3 +1,3 @@
-[submodule "external/tuio"]
-	path = external/tuio
-	url = https://github.com/mkalten/TUIO11_CPP.git
+[submodule "external/liblo"]
+	path = external/liblo
+	url = https://github.com/radarsat1/liblo.git

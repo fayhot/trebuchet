@@ -1,33 +1,33 @@
 #pragma once
 
+#include <iostream>
 #include <memory>
 #include <map>
+#include <set>
 #include <deque>
 
-#include <TuioClient.h>
-#include <TuioListener.h>
+#include <lo/lo.h>
+#include <lo/lo_cpp.h>
 
 #include <touch_point.hpp>
+#include <vec2.hpp>
 
-class GestureRecognizer : public TUIO::TuioListener {
+class GestureRecognizer {
  public:
   GestureRecognizer(uint32_t port = 3333);
   GestureRecognizer(const GestureRecognizer&) = delete;
   ~GestureRecognizer() = default;
 
   void start();
+  void update();
 
  protected:
-  virtual void addTuioObject(TUIO::TuioObject* tobj) override;
-  virtual void updateTuioObject(TUIO::TuioObject* tobj) override;
-  virtual void removeTuioObject(TUIO::TuioObject* tobj) override;
-  virtual void addTuioCursor(TUIO::TuioCursor* tcur) override;
-  virtual void updateTuioCursor(TUIO::TuioCursor* tcur) override;
-  virtual void removeTuioCursor(TUIO::TuioCursor* tcur) override;
-  virtual void addTuioBlob(TUIO::TuioBlob* tblb) override;
-  virtual void updateTuioBlob(TUIO::TuioBlob* tblb) override;
-  virtual void removeTuioBlob(TUIO::TuioBlob* tblb) override;
-  virtual void refresh(TUIO::TuioTime frameTime) override;
+  void start_bundle(const std::set<uint32_t>& alive_ids);
+  void set_cursor(int32_t id,
+                  const Vec2& pos,
+                  const Vec2& velocity,
+                  float acceleration);
+  void end_bundle(int32_t fseq);
 
   void detect_taps();
 
@@ -41,7 +41,7 @@ class GestureRecognizer : public TUIO::TuioListener {
   const double TAP_MAX_DISTANCE = 0.005;
 
  private:
-  std::unique_ptr<TUIO::TuioClient> m_tuio_client;
+  std::unique_ptr<lo::ServerThread> m_liblo_st;
 
   Vec2 m_screen_resolution;
   Vec2 m_screen_size;
