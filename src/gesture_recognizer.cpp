@@ -1,6 +1,7 @@
 #include <gesture_recognizer.hpp>
 
-GestureRecognizer::GestureRecognizer(uint32_t port) {
+GestureRecognizer::GestureRecognizer(uint32_t port)
+    : m_screen_resolution(1920.0, 1080.0), m_screen_size(0.597, 0.336) {
   m_tuio_client = std::make_unique<TUIO::TuioClient>(port);
 }
 
@@ -65,4 +66,12 @@ void GestureRecognizer::detect_taps() {
       ++it;
     }
   }
+}
+
+Vec2 GestureRecognizer::tuio_to_pixels(const Vec2& pos) const {
+  return pos * m_screen_resolution;
+}
+
+Vec2 GestureRecognizer::tuio_to_meters(const Vec2& pos) const {
+  return pos * m_screen_size;
 }

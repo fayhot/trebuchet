@@ -31,6 +31,9 @@ class GestureRecognizer : public TUIO::TuioListener {
 
   void detect_taps();
 
+  Vec2 tuio_to_pixels(const Vec2& pos) const;
+  Vec2 tuio_to_meters(const Vec2& pos) const;
+
  protected:
   const double UNHANDLED_TP_REMOVE_TIME = 10.0;
 
@@ -38,6 +41,9 @@ class GestureRecognizer : public TUIO::TuioListener {
 
  private:
   std::unique_ptr<TUIO::TuioClient> m_tuio_client;
+
+  Vec2 m_screen_resolution;
+  Vec2 m_screen_size;
 
   std::map<uint32_t, std::shared_ptr<TouchPoint>> m_touch_points;
   std::deque<std::shared_ptr<TouchPoint>> m_unhandled_tps;
