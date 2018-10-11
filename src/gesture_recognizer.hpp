@@ -29,8 +29,12 @@ class GestureRecognizer : public TUIO::TuioListener {
   virtual void removeTuioBlob(TUIO::TuioBlob* tblb) override;
   virtual void refresh(TUIO::TuioTime frameTime) override;
 
+  void detect_taps();
+
  protected:
   const double UNHANDLED_TP_REMOVE_TIME = 10.0;
+
+  const double TAP_MAX_DURATION = 0.3;
 
  private:
   std::unique_ptr<TUIO::TuioClient> m_tuio_client;
