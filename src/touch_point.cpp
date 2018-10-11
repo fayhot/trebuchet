@@ -42,3 +42,34 @@ void TouchPoint::update(TUIO::TuioCursor* tcur) {
 void TouchPoint::end() {
   m_end_time = std::chrono::high_resolution_clock::now();
 }
+
+uint32_t TouchPoint::id() const {
+  return m_id;
+}
+
+bool TouchPoint::finished() const {
+  return m_end_time !=
+         std::chrono::time_point<std::chrono::high_resolution_clock>::min();
+}
+
+double TouchPoint::duration() const {
+  auto end = m_end_time;
+  if (!finished()) {
+    end = std::chrono::high_resolution_clock::now();
+  }
+  return std::chrono::duration_cast<std::chrono::milliseconds>(end -
+                                                               m_start_time)
+             .count() /
+         1000.0;
+}
+
+double TouchPoint::finished_since() const {
+  if (finished()) {
+    auto now = std::chrono::high_resolution_clock::now();
+    return std::chrono::duration_cast<std::chrono::milliseconds>(now -
+                                                                 m_end_time)
+               .count() /
+           1000.0;
+  }
+  return -1.0;
+}

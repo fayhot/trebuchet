@@ -21,6 +21,11 @@ class TouchPoint {
   void update(TUIO::TuioCursor* tcur);
   void end();
 
+  uint32_t id() const;
+  bool finished() const;
+  double duration() const;
+  double finished_since() const;
+
  private:
   uint32_t m_id;
 
