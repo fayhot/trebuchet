@@ -47,6 +47,14 @@ uint32_t TouchPoint::id() const {
   return m_id;
 }
 
+const Vec2& TouchPoint::start_pos() const {
+  return m_start_pos;
+}
+
+const Vec2& TouchPoint::pos() const {
+  return m_pos;
+}
+
 bool TouchPoint::finished() const {
   return m_end_time !=
          std::chrono::time_point<std::chrono::high_resolution_clock>::min();

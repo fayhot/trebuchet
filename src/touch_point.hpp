@@ -22,6 +22,9 @@ class TouchPoint {
   void end();
 
   uint32_t id() const;
+  const Vec2& start_pos() const;
+  const Vec2& pos() const;
+
   bool finished() const;
   double duration() const;
   double finished_since() const;
