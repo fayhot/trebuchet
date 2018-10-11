@@ -15,14 +15,6 @@ Vec2& Vec2::operator=(Vec2&& other) noexcept {
   return *this;
 }
 
-Vec2 Vec2::operator+(const Vec2& other) {
-  return Vec2(x + other.x, y + other.y);
-}
-
-Vec2 Vec2::operator-(const Vec2& other) {
-  return Vec2(x - other.x, y - other.y);
-}
-
 Vec2& Vec2::operator+=(const Vec2& other) {
   x += other.x;
   y += other.y;
@@ -33,22 +25,6 @@ Vec2& Vec2::operator-=(const Vec2& other) {
   x -= other.x;
   y -= other.y;
   return *this;
-}
-
-Vec2 Vec2::operator+(double s) {
-  return Vec2(x + s, y + s);
-}
-
-Vec2 Vec2::operator-(double s) {
-  return Vec2(x - s, y - s);
-}
-
-Vec2 Vec2::operator*(double s) {
-  return Vec2(x * s, y * s);
-}
-
-Vec2 Vec2::operator/(double s) {
-  return Vec2(x / s, y / s);
 }
 
 Vec2& Vec2::operator+=(double s) {
@@ -83,19 +59,67 @@ Vec2& Vec2::normalize() {
   return *this;
 }
 
-double Vec2::distance(const Vec2& other) const {
-  Vec2 d(other.x - x, other.y - y);
-  return d.length();
-}
-
 double Vec2::length() const {
   return std::sqrt(x * x + y * y);
 }
 
-double Vec2::dot(const Vec2& lhs, const Vec2& rhs) {
+Vec2 operator+(const Vec2& lhs, const Vec2& rhs) {
+  return Vec2(lhs.x + rhs.x, lhs.y + rhs.y);
+}
+Vec2 operator-(const Vec2& lhs, const Vec2& rhs) {
+  return Vec2(lhs.x - rhs.x, lhs.y - rhs.y);
+}
+
+Vec2 operator*(const Vec2& lhs, const Vec2& rhs) {
+  return Vec2(lhs.x * rhs.x, lhs.y * rhs.y);
+}
+
+Vec2 operator/(const Vec2& lhs, const Vec2& rhs) {
+  return Vec2(lhs.x / rhs.x, lhs.y / rhs.y);
+}
+
+Vec2 operator+(const Vec2& vec, double s) {
+  return Vec2(vec.x + s, vec.y + s);
+}
+
+Vec2 operator-(const Vec2& vec, double s) {
+  return Vec2(vec.x - s, vec.y - s);
+}
+
+Vec2 operator*(const Vec2& vec, double s) {
+  return Vec2(vec.x * s, vec.y * s);
+}
+
+Vec2 operator/(const Vec2& vec, double s) {
+  return Vec2(vec.x / s, vec.y / s);
+}
+
+Vec2 operator+(double s, const Vec2& vec) {
+  return vec + s;
+}
+Vec2 operator-(double s, const Vec2& vec) {
+  return Vec2(s - vec.x, s - vec.y);
+}
+Vec2 operator*(double s, const Vec2& vec) {
+  return vec * s;
+}
+
+Vec2 operator/(double s, const Vec2& vec) {
+  return Vec2(s / vec.x, s / vec.y);
+}
+
+Vec2 normalize(const Vec2& vec) {
+  return Vec2(vec).normalize();
+}
+
+double distance(const Vec2& lhs, const Vec2& rhs) {
+  return Vec2(rhs - lhs).length();
+}
+
+double dot(const Vec2& lhs, const Vec2& rhs) {
   return lhs.x * rhs.x + lhs.y * rhs.y;
 }
 
-double Vec2::cross(const Vec2& lhs, const Vec2& rhs) {
+double cross(const Vec2& lhs, const Vec2& rhs) {
   return (lhs.x * rhs.y) - (lhs.y * rhs.x);
 }
