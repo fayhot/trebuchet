@@ -1,3 +1,6 @@
+# Build directory
+[bB]uild/
+
 # Prerequisites
 *.d
 
@@ -31,6 +34,7 @@
 *.out
 *.app
 
+# CMake
 CMakeCache.txt
 CMakeFiles
 CMakeScripts
