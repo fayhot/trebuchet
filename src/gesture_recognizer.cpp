@@ -59,7 +59,10 @@ void GestureRecognizer::refresh(TUIO::TuioTime frameTime) {
 void GestureRecognizer::detect_taps() {
   for (auto it = m_unhandled_tps.begin(); it != m_unhandled_tps.end();) {
     auto tp = *it;
-    if (tp->finished() && tp->duration() < TAP_MAX_DURATION) {
+    auto dist =
+        (tuio_to_meters(tp->pos() - tuio_to_meters(tp->start_pos()))).length();
+    if (tp->finished() && tp->duration() < TAP_MAX_DURATION &&
+        dist < TAP_MAX_DISTANCE) {
       std::cout << "TAP" << std::endl;
       it = m_unhandled_tps.erase(it);
     } else {

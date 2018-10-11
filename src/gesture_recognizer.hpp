@@ -38,6 +38,7 @@ class GestureRecognizer : public TUIO::TuioListener {
   const double UNHANDLED_TP_REMOVE_TIME = 10.0;
 
   const double TAP_MAX_DURATION = 0.3;
+  const double TAP_MAX_DISTANCE = 0.005;
 
  private:
   std::unique_ptr<TUIO::TuioClient> m_tuio_client;
