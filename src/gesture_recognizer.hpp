@@ -29,6 +29,9 @@ protected:
   virtual void removeTuioBlob(TUIO::TuioBlob *tblb) override;
   virtual void refresh(TUIO::TuioTime frameTime) override;
 
+protected:
+  const double UNHANDLED_TP_REMOVE_TIME = 10.0;
+
 private:
   std::unique_ptr<TUIO::TuioClient> m_tuio_client;
 

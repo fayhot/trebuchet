@@ -40,4 +40,15 @@ void GestureRecognizer::updateTuioBlob(TUIO::TuioBlob* tblb) {}
 
 void GestureRecognizer::removeTuioBlob(TUIO::TuioBlob* tblb) {}
 
-void GestureRecognizer::refresh(TUIO::TuioTime frameTime) {}
+void GestureRecognizer::refresh(TUIO::TuioTime frameTime) {
+  // remove unhandled touch points that are not active for some time
+  for (auto it = m_unhandled_tps.begin(); it != m_unhandled_tps.end();) {
+    auto tp = *it;
+    if (tp->finished_since() > UNHANDLED_TP_REMOVE_TIME) {
+      m_touch_points.erase(tp->id());
+      it = m_unhandled_tps.erase(it);
+    } else {
+      ++it;
+    }
+  }
+}
