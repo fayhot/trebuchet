@@ -33,6 +33,7 @@ void GestureRecognizer::start() {
 
 void GestureRecognizer::update() {
   detect_taps();
+  fire_verified_taps();
 
   // remove unhandled touch points that are not active for some time
   for (auto it = m_unhandled_tps.begin(); it != m_unhandled_tps.end();) {
@@ -90,8 +91,20 @@ void GestureRecognizer::detect_taps() {
         distance(tuio_to_meters(tp->pos()), tuio_to_meters(tp->start_pos()));
     if (tp->finished() && tp->duration() < TAP_MAX_DURATION &&
         dist < TAP_MAX_DISTANCE) {
-      std::cout << "TAP" << std::endl;
+      m_possible_taps.emplace_back(std::make_shared<Tap>(tp));
       it = m_unhandled_tps.erase(it);
+    } else {
+      ++it;
+    }
+  }
+}
+
+void GestureRecognizer::fire_verified_taps() {
+  for (auto it = m_possible_taps.begin(); it != m_possible_taps.end();) {
+    auto tap = *it;
+    if (tap->time_finished() > LONG_TAP_MAX_PAUSE) {
+      std::cout << "TAP" << std::endl;
+      it = m_possible_taps.erase(it);
     } else {
       ++it;
     }
