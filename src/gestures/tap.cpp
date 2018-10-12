@@ -14,3 +14,7 @@ double Tap::time_finished() const {
              .count() /
          1000.0;
 }
+
+void Tap::print() const {
+  std::cout << "Tap";
+}

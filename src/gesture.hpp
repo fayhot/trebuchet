@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <iostream>
 #include <chrono>
 #include <utility>
 #include <memory>
@@ -21,6 +22,8 @@ class Gesture {
 
   virtual bool finished() const;
   virtual double time_finished() const;
+
+  virtual void print() const;
 
  protected:
   Gesture(Gesture&& other) noexcept;

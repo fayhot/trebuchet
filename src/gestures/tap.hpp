@@ -1,6 +1,7 @@
 #pragma once
 
 #include <chrono>
+#include <iostream>
 
 #include <gesture.hpp>
 
@@ -12,4 +13,6 @@ class Tap : public Gesture {
   const std::shared_ptr<TouchPoint> touch_point() const;
 
   double time_finished() const override;
+
+  void print() const override;
 };

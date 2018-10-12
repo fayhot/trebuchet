@@ -44,3 +44,7 @@ double Gesture::time_finished() const {
   }
   return *std::min_element(times.begin(), times.end());
 }
+
+void Gesture::print() const {
+  std::cout << "Gesture";
+}
