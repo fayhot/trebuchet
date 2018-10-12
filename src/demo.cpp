@@ -10,6 +10,17 @@ int main(int argc, char const* argv[]) {
   while (true) {
     auto gesture_events = recognizer->update();
     for (auto event : gesture_events) {
+      switch (event.state) {
+        case GestureState::START:
+          std::cout << "start ";
+          break;
+        case GestureState::TRIGGER:
+          std::cout << "trigger ";
+          break;
+        case GestureState::END:
+          std::cout << "end ";
+          break;
+      }
       event.gesture->print();
       std::cout << std::endl;
     }
