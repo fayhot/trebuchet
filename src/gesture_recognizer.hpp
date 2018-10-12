@@ -38,6 +38,9 @@ class GestureRecognizer {
   void detect_long_taps();
   void detect_double_taps();
   void fire_verified_taps();
+  void remove_finished_gestures();
+
+  void add_gesture_event(std::shared_ptr<Gesture> gesture);
 
   Vec2 tuio_to_pixels(const Vec2& pos) const;
   Vec2 tuio_to_meters(const Vec2& pos) const;
@@ -65,6 +68,7 @@ class GestureRecognizer {
   std::map<uint32_t, std::shared_ptr<TouchPoint>> m_touch_points;
   std::deque<std::shared_ptr<TouchPoint>> m_unhandled_tps;
   std::deque<std::shared_ptr<Tap>> m_possible_taps;
+  std::deque<std::shared_ptr<Gesture>> m_active_gestures;
 
   std::deque<GestureEvent> m_gesture_events;
 };

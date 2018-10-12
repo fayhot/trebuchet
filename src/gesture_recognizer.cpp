@@ -34,6 +34,7 @@ void GestureRecognizer::start() {
 std::deque<GestureEvent> GestureRecognizer::update() {
   m_tp_mutex.lock();
   fire_verified_taps();
+  remove_finished_gestures();
   m_tp_mutex.unlock();
 
   // remove unhandled touch points that are not active for some time
@@ -124,8 +125,9 @@ void GestureRecognizer::detect_long_taps() {
     auto dist =
         distance(tuio_to_meters(tp->pos()), tuio_to_meters(tp->start_pos()));
     if (tp->duration() > LONG_TAP_MIN_DURATION && dist < TAP_MAX_DISTANCE) {
-      m_gesture_events.emplace_back(
-          GestureEvent(std::make_shared<LongTap>(tp), GestureState::START));
+      auto long_tap = std::make_shared<LongTap>(tp);
+      add_gesture_event(long_tap);
+      m_active_gestures.emplace_back(std::move(long_tap));
       it = m_unhandled_tps.erase(it);
     } else {
       ++it;
@@ -157,10 +159,8 @@ void GestureRecognizer::detect_double_taps() {
 
       // check if the two taps form a double tap
       if (pause < DOUBLE_TAP_MAX_PAUSE && dist < DOUBLE_TAP_MAX_DISTANCE) {
-        m_gesture_events.emplace_back(
-            GestureEvent(std::make_shared<DoubleTap>(first_tap->touch_point(),
-                                                     second_tap->touch_point()),
-                         GestureState::TRIGGER));
+        add_gesture_event(std::make_shared<DoubleTap>(
+            first_tap->touch_point(), second_tap->touch_point()));
         first_it = m_possible_taps.erase(first_it);
 
         // move the iterators to the next valid one
@@ -193,13 +193,30 @@ void GestureRecognizer::fire_verified_taps() {
   for (auto it = m_possible_taps.begin(); it != m_possible_taps.end();) {
     auto tap = *it;
     if (tap->time_finished() > DOUBLE_TAP_MAX_PAUSE) {
-      m_gesture_events.emplace_back(
-          GestureEvent(std::move(tap), GestureState::TRIGGER));
+      tap->set_state(GestureState::TRIGGER);
+      add_gesture_event(tap);
       it = m_possible_taps.erase(it);
     } else {
       ++it;
     }
   }
+}
+
+void GestureRecognizer::remove_finished_gestures() {
+  for (auto it = m_active_gestures.begin(); it != m_active_gestures.end();) {
+    auto gesture = *it;
+    if (gesture->finished()) {
+      gesture->set_state(GestureState::END);
+      add_gesture_event(gesture);
+      it = m_active_gestures.erase(it);
+    } else {
+      ++it;
+    }
+  }
+}
+
+void GestureRecognizer::add_gesture_event(std::shared_ptr<Gesture> gesture) {
+  m_gesture_events.emplace_back(GestureEvent(gesture, gesture->state()));
 }
 
 Vec2 GestureRecognizer::tuio_to_pixels(const Vec2& pos) const {
