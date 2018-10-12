@@ -22,6 +22,10 @@ const std::deque<std::shared_ptr<TouchPoint>> Gesture::touch_points() const {
   return m_touch_points;
 }
 
+GestureState Gesture::state() const {
+  return m_state;
+}
+
 bool Gesture::finished() const {
   for (auto tp : m_touch_points) {
     if (!tp->finished()) {
@@ -43,6 +47,10 @@ double Gesture::time_finished() const {
     }
   }
   return *std::min_element(times.begin(), times.end());
+}
+
+void Gesture::set_state(GestureState state) {
+  m_state = state;
 }
 
 void Gesture::print() const {

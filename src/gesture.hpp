@@ -20,8 +20,11 @@ class Gesture {
 
   const std::deque<std::shared_ptr<TouchPoint>> touch_points() const;
 
+  GestureState state() const;
   virtual bool finished() const;
   virtual double time_finished() const;
+
+  void set_state(GestureState state);
 
   virtual void print() const;
 
