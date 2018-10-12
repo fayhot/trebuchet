@@ -11,6 +11,7 @@
 
 #include <gesture.hpp>
 #include <gestures/tap.hpp>
+#include <gestures/double_tap.hpp>
 #include <touch_point.hpp>
 #include <vec2.hpp>
 
@@ -32,6 +33,7 @@ class GestureRecognizer {
   void end_bundle(int32_t fseq);
 
   void detect_taps();
+  void detect_double_taps();
   void fire_verified_taps();
 
   Vec2 tuio_to_pixels(const Vec2& pos) const;
@@ -42,7 +44,9 @@ class GestureRecognizer {
 
   const double TAP_MAX_DURATION = 0.3;
   const double TAP_MAX_DISTANCE = 0.005;
-  const double LONG_TAP_MAX_PAUSE = 0.2;
+
+  const double DOUBLE_TAP_MAX_DISTANCE = 0.02;
+  const double DOUBLE_TAP_MAX_PAUSE = 0.2;
 
  private:
   std::unique_ptr<lo::ServerThread> m_liblo_st;
