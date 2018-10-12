@@ -33,6 +33,7 @@ void GestureRecognizer::start() {
 
 void GestureRecognizer::update() {
   detect_taps();
+  detect_long_taps();
   detect_double_taps();
   fire_verified_taps();
 
@@ -93,6 +94,21 @@ void GestureRecognizer::detect_taps() {
     if (tp->finished() && tp->duration() < TAP_MAX_DURATION &&
         dist < TAP_MAX_DISTANCE) {
       m_possible_taps.emplace_back(std::make_shared<Tap>(tp));
+      it = m_unhandled_tps.erase(it);
+    } else {
+      ++it;
+    }
+  }
+}
+
+void GestureRecognizer::detect_long_taps() {
+  for (auto it = m_unhandled_tps.begin(); it != m_unhandled_tps.end();) {
+    auto tp = *it;
+    auto dist =
+        distance(tuio_to_meters(tp->pos()), tuio_to_meters(tp->start_pos()));
+    if (tp->duration() > LONG_TAP_MIN_DURATION && dist < TAP_MAX_DISTANCE) {
+      auto long_tap = std::make_shared<LongTap>(tp);
+      std::cout << "LONG TAP" << std::endl;
       it = m_unhandled_tps.erase(it);
     } else {
       ++it;

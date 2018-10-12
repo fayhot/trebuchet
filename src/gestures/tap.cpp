@@ -1,7 +1,7 @@
 #include <gestures/tap.hpp>
 
-Tap::Tap(const std::shared_ptr<TouchPoint>& tp)
-    : Gesture({tp}, GestureState::POSSIBLE) {}
+Tap::Tap(const std::shared_ptr<TouchPoint>& tp, GestureState state)
+    : Gesture({tp}, state) {}
 
 const std::shared_ptr<TouchPoint> Tap::touch_point() const {
   return m_touch_points.front();

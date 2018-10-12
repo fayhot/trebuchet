@@ -18,6 +18,7 @@ set(TREBUCHET_SOURCES
   "${SOURCE_DIR}/touch_point.cpp"
   "${SOURCE_DIR}/gesture.cpp"
   "${SOURCE_DIR}/gestures/tap.cpp"
+  "${SOURCE_DIR}/gestures/long_tap.cpp"
   "${SOURCE_DIR}/gestures/double_tap.cpp"
 )
 add_library(trebuchet SHARED ${TREBUCHET_SOURCES})
