@@ -31,13 +31,13 @@ void GestureRecognizer::start() {
   m_liblo_st->start();
 }
 
-void GestureRecognizer::update() {
-  detect_taps();
-  detect_long_taps();
-  detect_double_taps();
+std::deque<GestureEvent> GestureRecognizer::update() {
+  m_tp_mutex.lock();
   fire_verified_taps();
+  m_tp_mutex.unlock();
 
   // remove unhandled touch points that are not active for some time
+  m_tp_mutex.lock();
   for (auto it = m_unhandled_tps.begin(); it != m_unhandled_tps.end();) {
     auto tp = *it;
     if (tp->finished_since() > UNHANDLED_TP_REMOVE_TIME) {
@@ -47,9 +47,17 @@ void GestureRecognizer::update() {
       ++it;
     }
   }
+  m_tp_mutex.unlock();
+
+  m_gestures_mutex.lock();
+  std::deque<GestureEvent> gesture_events(std::move(m_gesture_events));
+  m_gesture_events.clear();
+  m_gestures_mutex.unlock();
+  return gesture_events;
 }
 
 void GestureRecognizer::start_bundle(const std::set<uint32_t>& alive_ids) {
+  m_tp_mutex.lock();
   // remove the touch points that are not alive anymore
   for (auto it = m_touch_points.begin(); it != m_touch_points.end();) {
     if (alive_ids.find(it->first) == alive_ids.end()) {
@@ -57,34 +65,43 @@ void GestureRecognizer::start_bundle(const std::set<uint32_t>& alive_ids) {
       // from the active touch points
       auto tp = it->second;
       tp->end();
-      std::cout << "remove cursor " << it->first << std::endl;
       it = m_touch_points.erase(it);
     } else {
       // go on to the next touch point
       ++it;
     }
   }
+  m_tp_mutex.unlock();
 }
 
 void GestureRecognizer::set_cursor(int32_t id,
                                    const Vec2& pos,
                                    const Vec2& velocity,
                                    float acceleration) {
+  m_tp_mutex.lock();
   auto it = m_touch_points.find(id);
   if (it == m_touch_points.end()) {
     // add new touch point
     auto tp = std::make_shared<TouchPoint>(id, pos, velocity, acceleration);
     m_touch_points.insert(std::make_pair(id, tp));
     m_unhandled_tps.push_back(tp);
-    std::cout << "add cursor " << id << std::endl;
   } else {
     // update already existing touch point
     auto tp = m_touch_points.at(id);
     tp->update(pos, velocity, acceleration);
   }
+  m_tp_mutex.unlock();
 }
 
-void GestureRecognizer::end_bundle(int32_t fseq) {}
+void GestureRecognizer::end_bundle(int32_t fseq) {
+  m_tp_mutex.lock();
+  m_gestures_mutex.lock();
+  detect_taps();
+  detect_long_taps();
+  detect_double_taps();
+  m_gestures_mutex.unlock();
+  m_tp_mutex.unlock();
+}
 
 void GestureRecognizer::detect_taps() {
   for (auto it = m_unhandled_tps.begin(); it != m_unhandled_tps.end();) {
@@ -107,8 +124,8 @@ void GestureRecognizer::detect_long_taps() {
     auto dist =
         distance(tuio_to_meters(tp->pos()), tuio_to_meters(tp->start_pos()));
     if (tp->duration() > LONG_TAP_MIN_DURATION && dist < TAP_MAX_DISTANCE) {
-      auto long_tap = std::make_shared<LongTap>(tp);
-      std::cout << "LONG TAP" << std::endl;
+      m_gesture_events.emplace_back(
+          GestureEvent(std::make_shared<LongTap>(tp), GestureState::START));
       it = m_unhandled_tps.erase(it);
     } else {
       ++it;
@@ -140,9 +157,10 @@ void GestureRecognizer::detect_double_taps() {
 
       // check if the two taps form a double tap
       if (pause < DOUBLE_TAP_MAX_PAUSE && dist < DOUBLE_TAP_MAX_DISTANCE) {
-        auto double_tap = std::make_shared<DoubleTap>(
-            first_tap->touch_point(), second_tap->touch_point());
-        std::cout << "DOUBLE TAP" << std::endl;
+        m_gesture_events.emplace_back(
+            GestureEvent(std::make_shared<DoubleTap>(first_tap->touch_point(),
+                                                     second_tap->touch_point()),
+                         GestureState::TRIGGER));
         first_it = m_possible_taps.erase(first_it);
 
         // move the iterators to the next valid one
@@ -175,7 +193,8 @@ void GestureRecognizer::fire_verified_taps() {
   for (auto it = m_possible_taps.begin(); it != m_possible_taps.end();) {
     auto tap = *it;
     if (tap->time_finished() > DOUBLE_TAP_MAX_PAUSE) {
-      std::cout << "TAP" << std::endl;
+      m_gesture_events.emplace_back(
+          GestureEvent(std::move(tap), GestureState::TRIGGER));
       it = m_possible_taps.erase(it);
     } else {
       ++it;

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <iostream>
 #include <memory>
 #include <map>
+#include <mutex>
 #include <set>
 #include <deque>
 
@@ -10,6 +10,7 @@
 #include <lo/lo_cpp.h>
 
 #include <gesture.hpp>
+#include <gestures/gesture_event.hpp>
 #include <gestures/tap.hpp>
 #include <gestures/long_tap.hpp>
 #include <gestures/double_tap.hpp>
@@ -23,7 +24,7 @@ class GestureRecognizer {
   ~GestureRecognizer() = default;
 
   void start();
-  void update();
+  std::deque<GestureEvent> update();
 
  protected:
   void start_bundle(const std::set<uint32_t>& alive_ids);
@@ -58,8 +59,12 @@ class GestureRecognizer {
   Vec2 m_screen_resolution;
   Vec2 m_screen_size;
 
+  std::mutex m_tp_mutex;
+  std::mutex m_gestures_mutex;
+
   std::map<uint32_t, std::shared_ptr<TouchPoint>> m_touch_points;
   std::deque<std::shared_ptr<TouchPoint>> m_unhandled_tps;
-
   std::deque<std::shared_ptr<Tap>> m_possible_taps;
+
+  std::deque<GestureEvent> m_gesture_events;
 };
