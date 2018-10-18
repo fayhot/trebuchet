@@ -1,3 +1,6 @@
 [submodule "external/liblo"]
 	path = external/liblo
 	url = https://github.com/radarsat1/liblo.git
+[submodule "external/cppitertools"]
+	path = external/cppitertools
+	url = https://github.com/ryanhaining/cppitertools.git
