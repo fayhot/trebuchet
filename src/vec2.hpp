@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <iostream>
 #include <utility>
 
 struct Vec2 {
@@ -28,6 +29,8 @@ struct Vec2 {
   double x;
   double y;
 };
+
+std::ostream& operator<<(std::ostream& stream, const Vec2& vec);
 
 Vec2 operator+(const Vec2& lhs, const Vec2& rhs);
 Vec2 operator-(const Vec2& lhs, const Vec2& rhs);

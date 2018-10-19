@@ -63,6 +63,11 @@ double Vec2::length() const {
   return std::sqrt(x * x + y * y);
 }
 
+std::ostream& operator<<(std::ostream& stream, const Vec2& vec) {
+  stream << "(" << vec.x << ", " << vec.y << ")";
+  return stream;
+}
+
 Vec2 operator+(const Vec2& lhs, const Vec2& rhs) {
   return Vec2(lhs.x + rhs.x, lhs.y + rhs.y);
 }
