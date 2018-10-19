@@ -9,11 +9,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # build the liblo library
 add_subdirectory(external/liblo/cmake)
 
-# include cppitertools
-include_directories(external/cppitertools)
-
 # build the trebuchet library
 set(SOURCE_DIR "src")
+include_directories(external)
 include_directories(${SOURCE_DIR})
 set(TREBUCHET_SOURCES
   "${SOURCE_DIR}/vec2.cpp"
