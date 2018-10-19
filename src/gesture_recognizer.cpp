@@ -111,7 +111,7 @@ void GestureRecognizer::detect_taps() {
         distance(tuio_to_meters(tp->pos()), tuio_to_meters(tp->start_pos()));
     if (tp->finished() && tp->duration() < TAP_MAX_DURATION &&
         dist < TAP_MAX_DISTANCE) {
-      m_possible_taps.emplace_back(std::make_shared<Tap>(tp));
+      m_possible_taps.emplace(std::make_shared<Tap>(tp));
       it = m_unhandled_tps.erase(it);
     } else {
       ++it;
