@@ -9,6 +9,8 @@
 #include <lo/lo.h>
 #include <lo/lo_cpp.h>
 
+#include <combinations.hpp>
+
 #include <gesture.hpp>
 #include <gestures/gesture_event.hpp>
 #include <gestures/tap.hpp>

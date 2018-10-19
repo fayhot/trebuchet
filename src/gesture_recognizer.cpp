@@ -141,51 +141,23 @@ void GestureRecognizer::detect_double_taps() {
     return;
   }
 
-  for (auto first_it = m_possible_taps.begin();
-       first_it != m_possible_taps.end() - 1;) {
-    for (auto second_it = first_it + 1; second_it != m_possible_taps.end();) {
-      auto first_tap = *first_it;
-      auto second_tap = *second_it;
+  for (const auto& taps : iter::combinations(m_possible_taps, 2)) {
+    // compute the properties of the tap combination
+    auto pause = std::abs(std::chrono::duration_cast<std::chrono::milliseconds>(
+                              taps[0]->touch_point()->end_time() -
+                              taps[1]->touch_point()->end_time())
+                              .count() /
+                          1000.0);
+    auto dist =
+        distance(taps[0]->touch_point()->pos(), taps[1]->touch_point()->pos());
 
-      // compute the properties of the tap combination
-      auto pause =
-          std::abs(std::chrono::duration_cast<std::chrono::milliseconds>(
-                       first_tap->touch_point()->end_time() -
-                       second_tap->touch_point()->end_time())
-                       .count() /
-                   1000.0);
-      auto dist = distance(first_tap->touch_point()->pos(),
-                           second_tap->touch_point()->pos());
-
-      // check if the two taps form a double tap
-      if (pause < DOUBLE_TAP_MAX_PAUSE && dist < DOUBLE_TAP_MAX_DISTANCE) {
-        add_gesture_event(std::make_shared<DoubleTap>(
-            first_tap->touch_point(), second_tap->touch_point()));
-        first_it = m_possible_taps.erase(first_it);
-
-        // move the iterators to the next valid one
-        if (first_it == second_it) {
-          first_it = second_it = m_possible_taps.erase(second_it);
-        } else {
-          second_it = m_possible_taps.erase(second_it);
-        }
-
-        // we're finished when the first iterator points to the end
-        if (first_it == m_possible_taps.end()) {
-          return;
-        }
-
-        // go back one element because the iterator is incremented by one after
-        // the continue command again
-        --first_it;
-        continue;
-      } else {
-        // does not fulfill double tap properties, move on to the next
-        // combination
-        ++second_it;
-      }
+    // check if the two taps form a double tap
+    if (pause < DOUBLE_TAP_MAX_PAUSE && dist < DOUBLE_TAP_MAX_DISTANCE) {
+      add_gesture_event(std::make_shared<DoubleTap>(taps[0]->touch_point(),
+                                                    taps[1]->touch_point()));
+      m_possible_taps.erase(taps[0]);
+      m_possible_taps.erase(taps[1]);
     }
-    ++first_it;
   }
 }
 
