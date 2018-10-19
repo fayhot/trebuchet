@@ -141,7 +141,7 @@ void GestureRecognizer::detect_double_taps() {
     return;
   }
 
-  for (const auto& taps : iter::combinations(m_possible_taps, 2)) {
+  for (auto&& taps : iter::combinations(m_possible_taps, 2)) {
     // compute the properties of the tap combination
     auto pause = std::abs(std::chrono::duration_cast<std::chrono::milliseconds>(
                               taps[0]->touch_point()->end_time() -
