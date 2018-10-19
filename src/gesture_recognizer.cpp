@@ -85,7 +85,7 @@ void GestureRecognizer::set_cursor(int32_t id,
     // add new touch point
     auto tp = std::make_shared<TouchPoint>(id, pos, velocity, acceleration);
     m_touch_points.insert(std::make_pair(id, tp));
-    m_unhandled_tps.push_back(tp);
+    m_unhandled_tps.insert(tp);
   } else {
     // update already existing touch point
     auto tp = m_touch_points.at(id);
@@ -127,7 +127,7 @@ void GestureRecognizer::detect_long_taps() {
     if (tp->duration() > LONG_TAP_MIN_DURATION && dist < TAP_MAX_DISTANCE) {
       auto long_tap = std::make_shared<LongTap>(tp);
       add_gesture_event(long_tap);
-      m_active_gestures.emplace_back(std::move(long_tap));
+      m_active_gestures.emplace(std::move(long_tap));
       it = m_unhandled_tps.erase(it);
     } else {
       ++it;

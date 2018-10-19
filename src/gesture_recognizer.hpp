@@ -68,9 +68,10 @@ class GestureRecognizer {
   std::mutex m_gestures_mutex;
 
   std::map<uint32_t, std::shared_ptr<TouchPoint>> m_touch_points;
-  std::deque<std::shared_ptr<TouchPoint>> m_unhandled_tps;
+
+  std::set<std::shared_ptr<TouchPoint>> m_unhandled_tps;
   std::set<std::shared_ptr<Tap>> m_possible_taps;
-  std::deque<std::shared_ptr<Gesture>> m_active_gestures;
+  std::set<std::shared_ptr<Gesture>> m_active_gestures;
 
   std::deque<GestureEvent> m_gesture_events;
 };
