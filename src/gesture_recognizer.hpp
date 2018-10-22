@@ -12,6 +12,7 @@
 #include <lo/lo_cpp.h>
 
 #include <cppitertools/combinations.hpp>
+#include <cppitertools/range.hpp>
 
 #include <gestures/gesture.hpp>
 #include <gestures/gesture_event.hpp>
@@ -19,6 +20,7 @@
 #include <gestures/long_tap.hpp>
 #include <gestures/double_tap.hpp>
 #include <gestures/pinch.hpp>
+#include <gestures/fling.hpp>
 #include <touch_point.hpp>
 #include <vec2.hpp>
 
@@ -41,6 +43,7 @@ class GestureRecognizer {
                   float acceleration);
   void end_bundle(int32_t fseq);
 
+  void detect_flings();
   void detect_taps();
   void detect_long_taps();
   void detect_double_taps();
@@ -67,6 +70,10 @@ class GestureRecognizer {
 
   const double PINCH_MIN_ANGLE_BETWEEN_CLUSTERS = 0.75 * M_PI;
   const double PINCH_MAX_ANGLE_DIFF_IN_CLUSTERS = 0.25 * M_PI;
+
+  const int32_t FLING_MAX_NUM_FINGERS = 3;
+  const double FLING_MIN_VELOCITY = 0.5;           // in m/s
+  const double FLING_MAX_ANGLE_DIFF = 0.2 * M_PI;  // in rad
 
   const std::vector<std::array<std::size_t, 4>> PINCH2F_TP_INDICES = {
       {0, 1, 2, 3},

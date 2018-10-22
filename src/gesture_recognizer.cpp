@@ -89,6 +89,7 @@ void GestureRecognizer::end_bundle(int32_t fseq) {
   detect_double_taps();
   detect_4finger_pinches();
   detect_2finger_pinches();
+  detect_flings();
 
   // remove unhandled touch points that are not active anymore
   for (auto it = m_unhandled_tps.begin(); it != m_unhandled_tps.end();) {
@@ -103,6 +104,56 @@ void GestureRecognizer::end_bundle(int32_t fseq) {
 
   m_gestures_mutex.unlock();
   m_tp_mutex.unlock();
+}
+
+void GestureRecognizer::detect_flings() {
+  for (auto&& num_fingers : iter::range(FLING_MAX_NUM_FINGERS, 0, -1)) {
+    for (auto&& touch_points :
+         iter::combinations(m_unhandled_tps, num_fingers)) {
+      std::set<std::shared_ptr<TouchPoint>> tps;
+      for (uint32_t i = 0; i < num_fingers; ++i) {
+        tps.insert(touch_points[i]);
+      }
+
+      // check if the touch points are all still unhandled and were not detected
+      // as a fling in a previous iteration
+      if (!only_unhandled_tps(tps)) {
+        continue;
+      }
+
+      // check if the velocities of all touch points are above the velocity
+      // threshold
+      bool min_velocity = true;
+      for (auto& tp : tps) {
+        auto velocity = (tp->velocity() * m_screen_size).length();
+        if (velocity < FLING_MIN_VELOCITY || tp->velocity().length() < 0.0001) {
+          min_velocity = false;
+        }
+      }
+      if (!min_velocity) {
+        continue;
+      }
+
+      // check if the maximum angle between the touch points is exceeded by any
+      // pair of two touch points
+      if (num_fingers > 1) {
+        auto max_angle = 0.0;
+        for (auto&& tp_pair : iter::combinations(touch_points, 2)) {
+          max_angle = std::max(
+              max_angle, angle(tp_pair[0]->velocity(), tp_pair[1]->velocity()));
+        }
+        if (max_angle > FLING_MAX_ANGLE_DIFF) {
+          continue;
+        }
+      }
+
+      // all conditions were met; we have a fling
+      add_gesture_event(std::make_shared<Fling>(tps), GestureEvent::START);
+      for (auto& tp : tps) {
+        m_unhandled_tps.erase(tp);
+      }
+    }
+  }
 }
 
 void GestureRecognizer::detect_taps() {

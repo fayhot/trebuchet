@@ -17,12 +17,13 @@ set(TREBUCHET_SOURCES
   "${SOURCE_DIR}/vec2.cpp"
   "${SOURCE_DIR}/gesture_recognizer.cpp"
   "${SOURCE_DIR}/touch_point.cpp"
-  
+
   "${SOURCE_DIR}/gestures/gesture.cpp"
   "${SOURCE_DIR}/gestures/tap.cpp"
   "${SOURCE_DIR}/gestures/long_tap.cpp"
   "${SOURCE_DIR}/gestures/double_tap.cpp"
   "${SOURCE_DIR}/gestures/pinch.cpp"
+  "${SOURCE_DIR}/gestures/fling.cpp"
 )
 add_library(trebuchet SHARED ${TREBUCHET_SOURCES})
 target_link_libraries(trebuchet lo_shared)
