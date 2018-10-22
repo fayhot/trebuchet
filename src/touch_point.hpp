@@ -5,6 +5,9 @@
 
 #include <vec2.hpp>
 
+using clock_type = std::chrono::high_resolution_clock;
+using time_point = std::chrono::time_point<clock_type>;
+
 class TouchPoint {
  public:
   TouchPoint(int32_t id,
@@ -30,11 +33,9 @@ class TouchPoint {
   const float acceleration() const;
   Vec2 direction() const;
 
-  std::chrono::time_point<std::chrono::high_resolution_clock> start_time()
-      const;
-  std::chrono::time_point<std::chrono::high_resolution_clock> update_time()
-      const;
-  std::chrono::time_point<std::chrono::high_resolution_clock> end_time() const;
+  time_point start_time() const;
+  time_point update_time() const;
+  time_point end_time() const;
 
   bool finished() const;
   double duration() const;
@@ -47,7 +48,7 @@ class TouchPoint {
   Vec2 m_velocity;
   float m_acceleration;
 
-  std::chrono::time_point<std::chrono::high_resolution_clock> m_start_time;
-  std::chrono::time_point<std::chrono::high_resolution_clock> m_update_time;
-  std::chrono::time_point<std::chrono::high_resolution_clock> m_end_time;
+  time_point m_start_time;
+  time_point m_update_time;
+  time_point m_end_time;
 };

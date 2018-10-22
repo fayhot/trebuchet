@@ -5,10 +5,9 @@ TouchPoint::TouchPoint(int32_t id,
                        const Vec2& velocity,
                        float acceleration)
     : m_id(id),
-      m_start_time(std::chrono::high_resolution_clock::now()),
+      m_start_time(clock_type::now()),
       m_update_time(m_start_time),
-      m_end_time(
-          std::chrono::time_point<std::chrono::high_resolution_clock>::min()),
+      m_end_time(time_point::min()),
       m_start_pos(pos),
       m_pos(pos),
       m_acceleration(acceleration) {}
@@ -45,14 +44,14 @@ bool TouchPoint::operator<(const TouchPoint& other) const {
 void TouchPoint::update(const Vec2& pos,
                         const Vec2& velocity,
                         float acceleration) {
-  m_update_time = std::chrono::high_resolution_clock::now();
+  m_update_time = clock_type::now();
   m_pos = pos;
   m_velocity = velocity;
   m_acceleration = acceleration;
 }
 
 void TouchPoint::end() {
-  m_end_time = std::chrono::high_resolution_clock::now();
+  m_end_time = clock_type::now();
 }
 
 uint32_t TouchPoint::id() const {
@@ -79,30 +78,26 @@ Vec2 TouchPoint::direction() const {
   return m_pos - m_start_pos;
 }
 
-std::chrono::time_point<std::chrono::high_resolution_clock>
-TouchPoint::start_time() const {
+time_point TouchPoint::start_time() const {
   return m_start_time;
 }
 
-std::chrono::time_point<std::chrono::high_resolution_clock>
-TouchPoint::update_time() const {
+time_point TouchPoint::update_time() const {
   return m_update_time;
 }
 
-std::chrono::time_point<std::chrono::high_resolution_clock>
-TouchPoint::end_time() const {
+time_point TouchPoint::end_time() const {
   return m_end_time;
 }
 
 bool TouchPoint::finished() const {
-  return m_end_time !=
-         std::chrono::time_point<std::chrono::high_resolution_clock>::min();
+  return m_end_time != time_point::min();
 }
 
 double TouchPoint::duration() const {
   auto end = m_end_time;
   if (!finished()) {
-    end = std::chrono::high_resolution_clock::now();
+    end = clock_type::now();
   }
   return std::chrono::duration_cast<std::chrono::milliseconds>(end -
                                                                m_start_time)
@@ -112,7 +107,7 @@ double TouchPoint::duration() const {
 
 double TouchPoint::finished_since() const {
   if (finished()) {
-    auto now = std::chrono::high_resolution_clock::now();
+    auto now = clock_type::now();
     return std::chrono::duration_cast<std::chrono::milliseconds>(now -
                                                                  m_end_time)
                .count() /
