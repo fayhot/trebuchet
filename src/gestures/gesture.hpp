@@ -6,16 +6,17 @@
 #include <utility>
 #include <memory>
 #include <deque>
+#include <set>
 
 #include <touch_point.hpp>
 
 class Gesture {
  public:
   Gesture() = default;
-  Gesture(const std::deque<std::shared_ptr<TouchPoint>>& tps);
+  Gesture(const std::set<std::shared_ptr<TouchPoint>>& tps);
   ~Gesture() = default;
 
-  const std::deque<std::shared_ptr<TouchPoint>> touch_points() const;
+  const std::set<std::shared_ptr<TouchPoint>> touch_points() const;
 
   virtual bool finished() const;
   virtual double time_finished() const;
@@ -30,5 +31,5 @@ class Gesture {
   Gesture& operator=(Gesture&& other) noexcept;
 
  protected:
-  std::deque<std::shared_ptr<TouchPoint>> m_touch_points;
+  std::set<std::shared_ptr<TouchPoint>> m_touch_points;
 };

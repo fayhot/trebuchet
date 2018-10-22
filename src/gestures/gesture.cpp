@@ -1,6 +1,6 @@
 #include <gestures/gesture.hpp>
 
-Gesture::Gesture(const std::deque<std::shared_ptr<TouchPoint>>& tps)
+Gesture::Gesture(const std::set<std::shared_ptr<TouchPoint>>& tps)
     : m_touch_points(tps) {}
 
 Gesture::Gesture(Gesture&& other) noexcept {
@@ -14,7 +14,7 @@ Gesture& Gesture::operator=(Gesture&& other) noexcept {
   return *this;
 }
 
-const std::deque<std::shared_ptr<TouchPoint>> Gesture::touch_points() const {
+const std::set<std::shared_ptr<TouchPoint>> Gesture::touch_points() const {
   return m_touch_points;
 }
 
@@ -42,11 +42,10 @@ double Gesture::time_finished() const {
 }
 
 std::ostream& Gesture::print_touch_points(std::ostream& stream) const {
-  for (auto it = m_touch_points.begin(); it != m_touch_points.end(); ++it) {
-    stream << std::to_string((*it)->id());
-    if (it != m_touch_points.end() - 1) {
-      stream << " ";
-    }
+  auto it = m_touch_points.begin();
+  stream << std::to_string((*it++)->id());
+  while (it != m_touch_points.end()) {
+    stream << " " << std::to_string((*it++)->id());
   }
   return stream;
 }

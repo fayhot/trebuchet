@@ -3,7 +3,7 @@
 Tap::Tap(const std::shared_ptr<TouchPoint>& tp) : Gesture({tp}) {}
 
 const std::shared_ptr<TouchPoint> Tap::touch_point() const {
-  return m_touch_points.front();
+  return *m_touch_points.begin();
 }
 
 double Tap::time_finished() const {
