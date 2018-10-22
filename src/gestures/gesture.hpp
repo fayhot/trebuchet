@@ -5,8 +5,8 @@
 #include <chrono>
 #include <utility>
 #include <memory>
-#include <deque>
 #include <set>
+#include <vector>
 
 #include <touch_point.hpp>
 

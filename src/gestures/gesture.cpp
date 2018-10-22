@@ -29,15 +29,17 @@ bool Gesture::finished() const {
 
 double Gesture::time_finished() const {
   auto now = std::chrono::high_resolution_clock::now();
-  std::deque<double> times;
-  for (auto tp : m_touch_points) {
-    if (tp->finished()) {
-      times.emplace_back(std::chrono::duration_cast<std::chrono::milliseconds>(
-                             now - tp->end_time())
-                             .count() /
-                         1000.0);
-    }
-  }
+  std::vector<double> times;
+  std::transform(
+      m_touch_points.begin(), m_touch_points.end(), std::back_inserter(times),
+      [&](auto& tp) -> double {
+        if (tp->finished()) {
+          return std::chrono::duration_cast<std::chrono::milliseconds>(
+                     now - tp->end_time())
+                     .count() /
+                 1000.0;
+        }
+      });
   return *std::min_element(times.begin(), times.end());
 }
 
