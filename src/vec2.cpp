@@ -128,3 +128,11 @@ double dot(const Vec2& lhs, const Vec2& rhs) {
 double cross(const Vec2& lhs, const Vec2& rhs) {
   return (lhs.x * rhs.y) - (lhs.y * rhs.x);
 }
+
+double angle(const Vec2& lhs, const Vec2& rhs) {
+  return std::acos(std::clamp(dot(normalize(lhs), normalize(rhs)), -1.0, 1.0));
+}
+
+double angle_deg(const Vec2& lhs, const Vec2& rhs) {
+  return angle(lhs, rhs) * 180.0 / M_PI;
+}

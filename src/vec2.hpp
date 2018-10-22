@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <utility>
@@ -50,3 +51,5 @@ Vec2 normalize(const Vec2& vec);
 double distance(const Vec2& lhs, const Vec2& rhs);
 double dot(const Vec2& lhs, const Vec2& rhs);
 double cross(const Vec2& lhs, const Vec2& rhs);
+double angle(const Vec2& lhs, const Vec2& rhs);
+double angle_deg(const Vec2& lhs, const Vec2& rhs);
