@@ -54,8 +54,6 @@ class GestureRecognizer {
   Vec2 tuio_to_meters(const Vec2& pos) const;
 
  protected:
-  const double UNHANDLED_TP_REMOVE_TIME = 10.0;
-
   const double TAP_MAX_DURATION = 0.3;
   const double TAP_MAX_DISTANCE = 0.005;
 

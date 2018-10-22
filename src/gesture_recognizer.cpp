@@ -37,19 +37,6 @@ std::deque<GestureEventPair> GestureRecognizer::update() {
   remove_finished_gestures();
   m_tp_mutex.unlock();
 
-  // remove unhandled touch points that are not active for some time
-  m_tp_mutex.lock();
-  for (auto it = m_unhandled_tps.begin(); it != m_unhandled_tps.end();) {
-    auto tp = *it;
-    if (tp->finished_since() > UNHANDLED_TP_REMOVE_TIME) {
-      m_touch_points.erase(tp->id());
-      it = m_unhandled_tps.erase(it);
-    } else {
-      ++it;
-    }
-  }
-  m_tp_mutex.unlock();
-
   m_gestures_mutex.lock();
   std::deque<GestureEventPair> gesture_events(std::move(m_gesture_events));
   m_gesture_events.clear();
@@ -102,6 +89,18 @@ void GestureRecognizer::end_bundle(int32_t fseq) {
   detect_double_taps();
   detect_4finger_pinches();
   detect_2finger_pinches();
+
+  // remove unhandled touch points that are not active anymore
+  for (auto it = m_unhandled_tps.begin(); it != m_unhandled_tps.end();) {
+    auto tp = *it;
+    if (tp->finished()) {
+      m_touch_points.erase(tp->id());
+      it = m_unhandled_tps.erase(it);
+    } else {
+      ++it;
+    }
+  }
+
   m_gestures_mutex.unlock();
   m_tp_mutex.unlock();
 }
