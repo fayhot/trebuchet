@@ -67,6 +67,11 @@ class GestureRecognizer {
   const double PINCH_MIN_ANGLE_BETWEEN_CLUSTERS = 0.75 * M_PI;
   const double PINCH_MAX_ANGLE_DIFF_IN_CLUSTERS = 0.25 * M_PI;
 
+  const std::vector<std::array<std::size_t, 4>> PINCH2F_TP_INDICES = {
+      {0, 1, 2, 3},
+      {0, 2, 1, 3},
+      {1, 2, 0, 3}};
+
  private:
   std::unique_ptr<lo::ServerThread> m_liblo_st;
 

@@ -190,9 +190,6 @@ void GestureRecognizer::detect_4finger_pinches() {
     return;
   }
 
-  const std::vector<std::array<std::size_t, 4>> tp_indices = {
-      {0, 1, 2, 3}, {0, 2, 1, 3}, {1, 2, 0, 3}};
-
   for (auto&& touch_points : iter::combinations(m_unhandled_tps, 4)) {
     bool all_tps_unhandled = true;
     for (auto& tp : touch_points) {
@@ -204,7 +201,7 @@ void GestureRecognizer::detect_4finger_pinches() {
       continue;
     }
 
-    for (auto indices : tp_indices) {
+    for (auto indices : PINCH2F_TP_INDICES) {
       auto pos0 = touch_points[indices[0]]->pos();
       auto pos1 = touch_points[indices[1]]->pos();
       auto pos2 = touch_points[indices[2]]->pos();
