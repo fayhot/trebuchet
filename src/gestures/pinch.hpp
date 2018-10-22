@@ -3,7 +3,7 @@
 #include <chrono>
 #include <iostream>
 
-#include <gesture.hpp>
+#include <gestures/gesture.hpp>
 
 class Pinch : public Gesture {
  public:

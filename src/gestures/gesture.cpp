@@ -1,4 +1,4 @@
-#include <gesture.hpp>
+#include <gestures/gesture.hpp>
 
 Gesture::Gesture(const std::deque<std::shared_ptr<TouchPoint>>& tps)
     : m_touch_points(tps) {}

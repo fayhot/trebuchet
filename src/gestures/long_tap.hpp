@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include <gesture.hpp>
+#include <gestures/gesture.hpp>
 #include <gestures/tap.hpp>
 
 class LongTap : public Tap {

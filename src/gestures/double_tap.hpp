@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include <gesture.hpp>
+#include <gestures/gesture.hpp>
 
 class DoubleTap : public Gesture {
  public:

@@ -12,7 +12,7 @@
 
 #include <cppitertools/combinations.hpp>
 
-#include <gesture.hpp>
+#include <gestures/gesture.hpp>
 #include <gestures/gesture_event.hpp>
 #include <gestures/tap.hpp>
 #include <gestures/long_tap.hpp>
