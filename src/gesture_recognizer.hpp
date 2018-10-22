@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <cmath>
 #include <memory>
 #include <map>
@@ -48,6 +49,8 @@ class GestureRecognizer {
   void fire_verified_taps();
   void remove_finished_gestures();
 
+  bool only_unhandled_tps(
+      const std::set<std::shared_ptr<TouchPoint>>& tps) const;
   void add_gesture_event(std::shared_ptr<Gesture> gesture, GestureEvent event);
 
   Vec2 tuio_to_pixels(const Vec2& pos) const;

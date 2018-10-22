@@ -190,13 +190,10 @@ void GestureRecognizer::detect_4finger_pinches() {
   }
 
   for (auto&& touch_points : iter::combinations(m_unhandled_tps, 4)) {
-    bool all_tps_unhandled = true;
-    for (auto& tp : touch_points) {
-      if (m_unhandled_tps.find(tp) == m_unhandled_tps.end()) {
-        all_tps_unhandled = false;
-      }
-    }
-    if (!all_tps_unhandled) {
+    // check if all touch points are still unhandled and have not been detected
+    // as part of a pinch in a previous iteration
+    if (!only_unhandled_tps({touch_points[0], touch_points[1], touch_points[2],
+                             touch_points[3]})) {
       continue;
     }
 
@@ -259,6 +256,13 @@ void GestureRecognizer::remove_finished_gestures() {
       ++it;
     }
   }
+}
+
+bool GestureRecognizer::only_unhandled_tps(
+    const std::set<std::shared_ptr<TouchPoint>>& tps) const {
+  return std::all_of(tps.begin(), tps.end(), [&](auto& tp) {
+    return m_unhandled_tps.find(tp) != m_unhandled_tps.end();
+  });
 }
 
 void GestureRecognizer::add_gesture_event(std::shared_ptr<Gesture> gesture,
