@@ -10,6 +10,7 @@ TouchPoint::TouchPoint(int32_t id,
       m_end_time(time_point::min()),
       m_start_pos(pos),
       m_pos(pos),
+      m_velocity(velocity),
       m_acceleration(acceleration) {}
 
 TouchPoint::TouchPoint(TouchPoint&& other) noexcept {
@@ -17,6 +18,7 @@ TouchPoint::TouchPoint(TouchPoint&& other) noexcept {
     std::swap(m_id, other.m_id);
     std::swap(m_start_pos, other.m_start_pos);
     std::swap(m_pos, other.m_pos);
+    std::swap(m_velocity, other.m_velocity);
     std::swap(m_acceleration, other.m_acceleration);
     std::swap(m_start_time, other.m_start_time);
     std::swap(m_update_time, other.m_update_time);
@@ -29,6 +31,7 @@ TouchPoint& TouchPoint::operator=(TouchPoint&& other) noexcept {
     std::swap(m_id, other.m_id);
     std::swap(m_start_pos, other.m_start_pos);
     std::swap(m_pos, other.m_pos);
+    std::swap(m_velocity, other.m_velocity);
     std::swap(m_acceleration, other.m_acceleration);
     std::swap(m_start_time, other.m_start_time);
     std::swap(m_update_time, other.m_update_time);
