@@ -100,6 +100,7 @@ void GestureRecognizer::end_bundle(int32_t fseq) {
   detect_taps();
   detect_long_taps();
   detect_double_taps();
+  detect_pinches();
   m_gestures_mutex.unlock();
   m_tp_mutex.unlock();
 }
@@ -157,6 +158,26 @@ void GestureRecognizer::detect_double_taps() {
                                                     taps[1]->touch_point()));
       m_possible_taps.erase(taps[0]);
       m_possible_taps.erase(taps[1]);
+    }
+  }
+}
+
+void GestureRecognizer::detect_pinches() {
+  // at least two touch points are required for a pinch
+  if (m_unhandled_tps.size() < 2) {
+    return;
+  }
+
+  for (auto&& touch_points : iter::combinations(m_unhandled_tps, 2)) {
+    if (angle(touch_points[0]->velocity(), touch_points[1]->velocity()) >=
+        PINCH_MIN_ANGLE) {
+      std::deque<std::shared_ptr<TouchPoint>> tps = {touch_points[0],
+                                                     touch_points[1]};
+      auto pinch = std::make_shared<Pinch>(tps);
+      add_gesture_event(pinch);
+      m_active_gestures.emplace(std::move(pinch));
+      m_unhandled_tps.erase(touch_points[0]);
+      m_unhandled_tps.erase(touch_points[1]);
     }
   }
 }
