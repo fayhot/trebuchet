@@ -11,6 +11,7 @@
 
 class Gesture {
  public:
+  Gesture() = default;
   Gesture(const std::deque<std::shared_ptr<TouchPoint>>& tps);
   ~Gesture() = default;
 

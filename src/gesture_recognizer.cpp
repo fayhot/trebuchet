@@ -100,7 +100,8 @@ void GestureRecognizer::end_bundle(int32_t fseq) {
   detect_taps();
   detect_long_taps();
   detect_double_taps();
-  detect_pinches();
+  detect_4finger_pinches();
+  detect_2finger_pinches();
   m_gestures_mutex.unlock();
   m_tp_mutex.unlock();
 }
@@ -163,22 +164,79 @@ void GestureRecognizer::detect_double_taps() {
   }
 }
 
-void GestureRecognizer::detect_pinches() {
-  // at least two touch points are required for a pinch
+void GestureRecognizer::detect_2finger_pinches() {
+  // at least two touch points are required for a tw-finger-pinch
   if (m_unhandled_tps.size() < 2) {
     return;
   }
 
   for (auto&& touch_points : iter::combinations(m_unhandled_tps, 2)) {
     if (angle(touch_points[0]->velocity(), touch_points[1]->velocity()) >=
-        PINCH_MIN_ANGLE) {
-      std::deque<std::shared_ptr<TouchPoint>> tps = {touch_points[0],
-                                                     touch_points[1]};
-      auto pinch = std::make_shared<Pinch>(tps);
+        PINCH_MIN_ANGLE_BETWEEN_CLUSTERS) {
+      auto pinch = std::make_shared<Pinch>(
+          std::set<std::shared_ptr<TouchPoint>>{touch_points[0]},
+          std::set<std::shared_ptr<TouchPoint>>{touch_points[1]});
       add_gesture_event(pinch, GestureEvent::START);
       m_active_gestures.emplace(std::move(pinch));
       m_unhandled_tps.erase(touch_points[0]);
       m_unhandled_tps.erase(touch_points[1]);
+    }
+  }
+}
+
+void GestureRecognizer::detect_4finger_pinches() {
+  // at least two four points are required for a four-finger-pinch
+  if (m_unhandled_tps.size() < 4) {
+    return;
+  }
+
+  const std::vector<std::array<std::size_t, 4>> tp_indices = {
+      {0, 1, 2, 3}, {0, 2, 1, 3}, {1, 2, 0, 3}};
+
+  for (auto&& touch_points : iter::combinations(m_unhandled_tps, 4)) {
+    bool all_tps_unhandled = true;
+    for (auto& tp : touch_points) {
+      if (m_unhandled_tps.find(tp) == m_unhandled_tps.end()) {
+        all_tps_unhandled = false;
+      }
+    }
+    if (!all_tps_unhandled) {
+      continue;
+    }
+
+    for (auto indices : tp_indices) {
+      auto pos0 = touch_points[indices[0]]->pos();
+      auto pos1 = touch_points[indices[1]]->pos();
+      auto pos2 = touch_points[indices[2]]->pos();
+      auto pos3 = touch_points[indices[3]]->pos();
+
+      // check if the angle between the two positions in a cluster have an angle
+      // between them that is too large
+      if (angle(pos0, pos1) > PINCH_MAX_ANGLE_DIFF_IN_CLUSTERS ||
+          angle(pos2, pos3) > PINCH_MAX_ANGLE_DIFF_IN_CLUSTERS) {
+        continue;
+      }
+
+      auto cluster0_velocity = 0.5 * (touch_points[indices[0]]->velocity() +
+                                      touch_points[indices[1]]->velocity());
+      auto cluster1_velocity = 0.5 * (touch_points[indices[2]]->velocity() +
+                                      touch_points[indices[3]]->velocity());
+
+      if (angle(cluster0_velocity, cluster1_velocity) >=
+          PINCH_MIN_ANGLE_BETWEEN_CLUSTERS) {
+        auto pinch = std::make_shared<Pinch>(
+            std::set<std::shared_ptr<TouchPoint>>{touch_points[indices[0]],
+                                                  touch_points[indices[1]]},
+            std::set<std::shared_ptr<TouchPoint>>{touch_points[indices[2]],
+                                                  touch_points[indices[3]]});
+        add_gesture_event(pinch, GestureEvent::START);
+        m_active_gestures.emplace(std::move(pinch));
+        m_unhandled_tps.erase(touch_points[0]);
+        m_unhandled_tps.erase(touch_points[1]);
+        m_unhandled_tps.erase(touch_points[2]);
+        m_unhandled_tps.erase(touch_points[3]);
+        break;
+      }
     }
   }
 }

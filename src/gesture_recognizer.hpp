@@ -43,7 +43,8 @@ class GestureRecognizer {
   void detect_taps();
   void detect_long_taps();
   void detect_double_taps();
-  void detect_pinches();
+  void detect_2finger_pinches();
+  void detect_4finger_pinches();
   void fire_verified_taps();
   void remove_finished_gestures();
 
@@ -63,7 +64,8 @@ class GestureRecognizer {
   const double DOUBLE_TAP_MAX_DISTANCE = 0.02;
   const double DOUBLE_TAP_MAX_PAUSE = 0.2;
 
-  const double PINCH_MIN_ANGLE = 0.75 * M_PI;
+  const double PINCH_MIN_ANGLE_BETWEEN_CLUSTERS = 0.75 * M_PI;
+  const double PINCH_MAX_ANGLE_DIFF_IN_CLUSTERS = 0.25 * M_PI;
 
  private:
   std::unique_ptr<lo::ServerThread> m_liblo_st;
