@@ -28,7 +28,7 @@ std::ostream& Pinch::print(std::ostream& stream) const {
   } else if (m_vertical) {
     stream << "Vertical";
   }
-  stream << "Pinch <";
+  stream << "Pinch" << m_touch_points.size() / 2 << " <";
   print_touch_points(stream);
   return stream << ">";
 }
