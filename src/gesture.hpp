@@ -26,7 +26,8 @@ class Gesture {
 
   void set_state(GestureState state);
 
-  virtual void print() const;
+  std::ostream& print_touch_points(std::ostream& stream) const;
+  virtual std::ostream& print(std::ostream& stream) const;
 
  protected:
   Gesture(Gesture&& other) noexcept;

@@ -4,6 +4,8 @@ DoubleTap::DoubleTap(std::shared_ptr<TouchPoint> first_tp,
                      std::shared_ptr<TouchPoint> second_tp)
     : Gesture({first_tp, second_tp}, GestureState::TRIGGER) {}
 
-void DoubleTap::print() const {
-  std::cout << "DoubleTap";
+std::ostream& DoubleTap::print(std::ostream& stream) const {
+  stream << "DoubleTap <";
+  print_touch_points(stream);
+  return stream << ">";
 }

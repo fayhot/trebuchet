@@ -3,6 +3,8 @@
 LongTap::LongTap(const std::shared_ptr<TouchPoint>& tp)
     : Tap(tp, GestureState::START) {}
 
-void LongTap::print() const {
-  std::cout << "LongTap";
+std::ostream& LongTap::print(std::ostream& stream) const {
+  stream << "LongTap <";
+  print_touch_points(stream);
+  return stream << ">";
 }

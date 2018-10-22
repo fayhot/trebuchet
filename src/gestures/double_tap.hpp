@@ -9,5 +9,5 @@ class DoubleTap : public Gesture {
   DoubleTap(std::shared_ptr<TouchPoint> first_tp,
             std::shared_ptr<TouchPoint> second_tp);
 
-  void print() const override;
+  std::ostream& print(std::ostream& stream) const override;
 };

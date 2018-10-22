@@ -9,5 +9,5 @@ class Pinch : public Gesture {
  public:
   Pinch(const std::deque<std::shared_ptr<TouchPoint>>& tps);
 
-  void print() const override;
+  std::ostream& print(std::ostream& stream) const override;
 };

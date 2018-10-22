@@ -53,6 +53,18 @@ void Gesture::set_state(GestureState state) {
   m_state = state;
 }
 
-void Gesture::print() const {
-  std::cout << "Gesture";
+std::ostream& Gesture::print_touch_points(std::ostream& stream) const {
+  for (auto it = m_touch_points.begin(); it != m_touch_points.end(); ++it) {
+    stream << std::to_string((*it)->id());
+    if (it != m_touch_points.end() - 1) {
+      stream << " ";
+    }
+  }
+  return stream;
+}
+
+std::ostream& Gesture::print(std::ostream& stream) const {
+  stream << "Gesture <";
+  print_touch_points(stream);
+  return stream << ">";
 }

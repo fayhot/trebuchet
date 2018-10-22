@@ -15,6 +15,8 @@ double Tap::time_finished() const {
          1000.0;
 }
 
-void Tap::print() const {
-  std::cout << "Tap";
+std::ostream& Tap::print(std::ostream& stream) const {
+  stream << "Tap <";
+  print_touch_points(stream);
+  return stream << ">";
 }

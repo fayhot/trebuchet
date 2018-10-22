@@ -14,5 +14,5 @@ class Tap : public Gesture {
 
   double time_finished() const override;
 
-  void print() const override;
+  std::ostream& print(std::ostream& stream) const override;
 };

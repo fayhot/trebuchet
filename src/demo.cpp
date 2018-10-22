@@ -21,7 +21,7 @@ int main(int argc, char const* argv[]) {
           std::cout << "end ";
           break;
       }
-      event.gesture->print();
+      event.gesture->print(std::cout);
       std::cout << std::endl;
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
