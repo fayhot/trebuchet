@@ -53,3 +53,4 @@ double dot(const Vec2& lhs, const Vec2& rhs);
 double cross(const Vec2& lhs, const Vec2& rhs);
 double angle(const Vec2& lhs, const Vec2& rhs);
 double angle_deg(const Vec2& lhs, const Vec2& rhs);
+Vec2 center(const Vec2& lhs, const Vec2& rhs);
