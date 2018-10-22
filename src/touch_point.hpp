@@ -28,6 +28,7 @@ class TouchPoint {
   const Vec2& pos() const;
   const Vec2& velocity() const;
   const float acceleration() const;
+  Vec2 direction() const;
 
   std::chrono::time_point<std::chrono::high_resolution_clock> start_time()
       const;

@@ -75,6 +75,10 @@ const float TouchPoint::acceleration() const {
   return m_acceleration;
 }
 
+Vec2 TouchPoint::direction() const {
+  return m_pos - m_start_pos;
+}
+
 std::chrono::time_point<std::chrono::high_resolution_clock>
 TouchPoint::start_time() const {
   return m_start_time;
