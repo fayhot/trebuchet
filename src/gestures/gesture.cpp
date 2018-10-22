@@ -28,7 +28,7 @@ bool Gesture::finished() const {
 }
 
 double Gesture::time_finished() const {
-  auto now = std::chrono::high_resolution_clock::now();
+  auto now = clock_type::now();
   std::vector<double> times;
   std::transform(
       m_touch_points.begin(), m_touch_points.end(), std::back_inserter(times),
