@@ -137,6 +137,7 @@ double angle_deg(const Vec2& lhs, const Vec2& rhs) {
   return angle(lhs, rhs) * 180.0 / M_PI;
 }
 
-Vec2 center(const Vec2& lhs, const Vec2& rhs) {
-  return lhs + 0.5 * (rhs - lhs);
+Vec2 centroid(const std::vector<Vec2>& vectors) {
+  return std::accumulate(vectors.begin(), vectors.end(), Vec2()) /
+         vectors.size();
 }
