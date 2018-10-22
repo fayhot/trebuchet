@@ -128,7 +128,6 @@ void GestureRecognizer::detect_long_taps() {
     if (tp->duration() > LONG_TAP_MIN_DURATION && dist < TAP_MAX_DISTANCE) {
       auto long_tap = std::make_shared<LongTap>(tp);
       add_gesture_event(long_tap, GestureEvent::START);
-      m_active_gestures.emplace(std::move(long_tap));
       it = m_unhandled_tps.erase(it);
     } else {
       ++it;
@@ -176,7 +175,6 @@ void GestureRecognizer::detect_2finger_pinches() {
           std::set<std::shared_ptr<TouchPoint>>{touch_points[0]},
           std::set<std::shared_ptr<TouchPoint>>{touch_points[1]});
       add_gesture_event(pinch, GestureEvent::START);
-      m_active_gestures.emplace(std::move(pinch));
       m_unhandled_tps.erase(touch_points[0]);
       m_unhandled_tps.erase(touch_points[1]);
     }
@@ -223,7 +221,6 @@ void GestureRecognizer::detect_4finger_pinches() {
             std::set<std::shared_ptr<TouchPoint>>{touch_points[indices[2]],
                                                   touch_points[indices[3]]});
         add_gesture_event(pinch, GestureEvent::START);
-        m_active_gestures.emplace(std::move(pinch));
         m_unhandled_tps.erase(touch_points[0]);
         m_unhandled_tps.erase(touch_points[1]);
         m_unhandled_tps.erase(touch_points[2]);
@@ -268,6 +265,10 @@ bool GestureRecognizer::only_unhandled_tps(
 void GestureRecognizer::add_gesture_event(std::shared_ptr<Gesture> gesture,
                                           GestureEvent event) {
   m_gesture_events.emplace_back(std::make_pair(gesture, event));
+
+  if (event == GestureEvent::START) {
+    m_active_gestures.emplace(std::move(gesture));
+  }
 }
 
 Vec2 GestureRecognizer::tuio_to_pixels(const Vec2& pos) const {
