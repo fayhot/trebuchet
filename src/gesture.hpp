@@ -9,22 +9,15 @@
 
 #include <touch_point.hpp>
 
-enum class GestureState { POSSIBLE, START, END, TRIGGER };
-
 class Gesture {
  public:
-  Gesture(GestureState state = GestureState::START);
-  Gesture(const std::deque<std::shared_ptr<TouchPoint>>& tps,
-          GestureState state = GestureState::START);
+  Gesture(const std::deque<std::shared_ptr<TouchPoint>>& tps);
   ~Gesture() = default;
 
   const std::deque<std::shared_ptr<TouchPoint>> touch_points() const;
 
-  GestureState state() const;
   virtual bool finished() const;
   virtual double time_finished() const;
-
-  void set_state(GestureState state);
 
   std::ostream& print_touch_points(std::ostream& stream) const;
   virtual std::ostream& print(std::ostream& stream) const;
@@ -36,6 +29,5 @@ class Gesture {
   Gesture& operator=(Gesture&& other) noexcept;
 
  protected:
-  GestureState m_state;
   std::deque<std::shared_ptr<TouchPoint>> m_touch_points;
 };

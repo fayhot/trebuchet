@@ -21,6 +21,8 @@
 #include <touch_point.hpp>
 #include <vec2.hpp>
 
+using GestureEventPair = std::pair<std::shared_ptr<Gesture>, GestureEvent>;
+
 class GestureRecognizer {
  public:
   GestureRecognizer(uint32_t port = 3333);
@@ -28,7 +30,7 @@ class GestureRecognizer {
   ~GestureRecognizer() = default;
 
   void start();
-  std::deque<GestureEvent> update();
+  std::deque<GestureEventPair> update();
 
  protected:
   void start_bundle(const std::set<uint32_t>& alive_ids);
@@ -45,7 +47,7 @@ class GestureRecognizer {
   void fire_verified_taps();
   void remove_finished_gestures();
 
-  void add_gesture_event(std::shared_ptr<Gesture> gesture);
+  void add_gesture_event(std::shared_ptr<Gesture> gesture, GestureEvent event);
 
   Vec2 tuio_to_pixels(const Vec2& pos) const;
   Vec2 tuio_to_meters(const Vec2& pos) const;
@@ -78,5 +80,5 @@ class GestureRecognizer {
   std::set<std::shared_ptr<Tap>> m_possible_taps;
   std::set<std::shared_ptr<Gesture>> m_active_gestures;
 
-  std::deque<GestureEvent> m_gesture_events;
+  std::deque<GestureEventPair> m_gesture_events;
 };

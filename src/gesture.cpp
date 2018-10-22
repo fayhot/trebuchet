@@ -1,10 +1,7 @@
 #include <gesture.hpp>
 
-Gesture::Gesture(GestureState state) : m_state(state) {}
-
-Gesture::Gesture(const std::deque<std::shared_ptr<TouchPoint>>& tps,
-                 GestureState state)
-    : m_touch_points(tps), m_state(state) {}
+Gesture::Gesture(const std::deque<std::shared_ptr<TouchPoint>>& tps)
+    : m_touch_points(tps) {}
 
 Gesture::Gesture(Gesture&& other) noexcept {
   std::swap(m_touch_points, other.m_touch_points);
@@ -12,7 +9,6 @@ Gesture::Gesture(Gesture&& other) noexcept {
 
 Gesture& Gesture::operator=(Gesture&& other) noexcept {
   if (this != &other) {
-    std::swap(m_state, other.m_state);
     std::swap(m_touch_points, other.m_touch_points);
   }
   return *this;
@@ -20,10 +16,6 @@ Gesture& Gesture::operator=(Gesture&& other) noexcept {
 
 const std::deque<std::shared_ptr<TouchPoint>> Gesture::touch_points() const {
   return m_touch_points;
-}
-
-GestureState Gesture::state() const {
-  return m_state;
 }
 
 bool Gesture::finished() const {
@@ -47,10 +39,6 @@ double Gesture::time_finished() const {
     }
   }
   return *std::min_element(times.begin(), times.end());
-}
-
-void Gesture::set_state(GestureState state) {
-  m_state = state;
 }
 
 std::ostream& Gesture::print_touch_points(std::ostream& stream) const {

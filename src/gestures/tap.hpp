@@ -7,8 +7,7 @@
 
 class Tap : public Gesture {
  public:
-  Tap(const std::shared_ptr<TouchPoint>& tp,
-      GestureState state = GestureState::POSSIBLE);
+  Tap(const std::shared_ptr<TouchPoint>& tp);
 
   const std::shared_ptr<TouchPoint> touch_point() const;
 

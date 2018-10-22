@@ -31,7 +31,7 @@ void GestureRecognizer::start() {
   m_liblo_st->start();
 }
 
-std::deque<GestureEvent> GestureRecognizer::update() {
+std::deque<GestureEventPair> GestureRecognizer::update() {
   m_tp_mutex.lock();
   fire_verified_taps();
   remove_finished_gestures();
@@ -51,7 +51,7 @@ std::deque<GestureEvent> GestureRecognizer::update() {
   m_tp_mutex.unlock();
 
   m_gestures_mutex.lock();
-  std::deque<GestureEvent> gesture_events(std::move(m_gesture_events));
+  std::deque<GestureEventPair> gesture_events(std::move(m_gesture_events));
   m_gesture_events.clear();
   m_gestures_mutex.unlock();
   return gesture_events;
@@ -127,7 +127,7 @@ void GestureRecognizer::detect_long_taps() {
         distance(tuio_to_meters(tp->pos()), tuio_to_meters(tp->start_pos()));
     if (tp->duration() > LONG_TAP_MIN_DURATION && dist < TAP_MAX_DISTANCE) {
       auto long_tap = std::make_shared<LongTap>(tp);
-      add_gesture_event(long_tap);
+      add_gesture_event(long_tap, GestureEvent::START);
       m_active_gestures.emplace(std::move(long_tap));
       it = m_unhandled_tps.erase(it);
     } else {
@@ -155,7 +155,8 @@ void GestureRecognizer::detect_double_taps() {
     // check if the two taps form a double tap
     if (pause < DOUBLE_TAP_MAX_PAUSE && dist < DOUBLE_TAP_MAX_DISTANCE) {
       add_gesture_event(std::make_shared<DoubleTap>(taps[0]->touch_point(),
-                                                    taps[1]->touch_point()));
+                                                    taps[1]->touch_point()),
+                        GestureEvent::TRIGGER);
       m_possible_taps.erase(taps[0]);
       m_possible_taps.erase(taps[1]);
     }
@@ -174,7 +175,7 @@ void GestureRecognizer::detect_pinches() {
       std::deque<std::shared_ptr<TouchPoint>> tps = {touch_points[0],
                                                      touch_points[1]};
       auto pinch = std::make_shared<Pinch>(tps);
-      add_gesture_event(pinch);
+      add_gesture_event(pinch, GestureEvent::START);
       m_active_gestures.emplace(std::move(pinch));
       m_unhandled_tps.erase(touch_points[0]);
       m_unhandled_tps.erase(touch_points[1]);
@@ -186,8 +187,7 @@ void GestureRecognizer::fire_verified_taps() {
   for (auto it = m_possible_taps.begin(); it != m_possible_taps.end();) {
     auto tap = *it;
     if (tap->time_finished() > DOUBLE_TAP_MAX_PAUSE) {
-      tap->set_state(GestureState::TRIGGER);
-      add_gesture_event(tap);
+      add_gesture_event(tap, GestureEvent::TRIGGER);
       it = m_possible_taps.erase(it);
     } else {
       ++it;
@@ -199,8 +199,7 @@ void GestureRecognizer::remove_finished_gestures() {
   for (auto it = m_active_gestures.begin(); it != m_active_gestures.end();) {
     auto gesture = *it;
     if (gesture->finished()) {
-      gesture->set_state(GestureState::END);
-      add_gesture_event(gesture);
+      add_gesture_event(gesture, GestureEvent::END);
       it = m_active_gestures.erase(it);
     } else {
       ++it;
@@ -208,8 +207,9 @@ void GestureRecognizer::remove_finished_gestures() {
   }
 }
 
-void GestureRecognizer::add_gesture_event(std::shared_ptr<Gesture> gesture) {
-  m_gesture_events.emplace_back(GestureEvent(gesture, gesture->state()));
+void GestureRecognizer::add_gesture_event(std::shared_ptr<Gesture> gesture,
+                                          GestureEvent event) {
+  m_gesture_events.emplace_back(std::make_pair(gesture, event));
 }
 
 Vec2 GestureRecognizer::tuio_to_pixels(const Vec2& pos) const {
