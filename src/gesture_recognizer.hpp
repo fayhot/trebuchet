@@ -49,6 +49,8 @@ class GestureRecognizer {
   void detect_double_taps();
   void detect_2finger_pinches();
   void detect_4finger_pinches();
+
+  void cleanup_inactive_touch_points();
   void fire_verified_taps();
   void remove_finished_gestures();
 

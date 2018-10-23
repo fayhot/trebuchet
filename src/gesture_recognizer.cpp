@@ -91,16 +91,7 @@ void GestureRecognizer::end_bundle(int32_t fseq) {
   detect_2finger_pinches();
   detect_flings();
 
-  // remove unhandled touch points that are not active anymore
-  for (auto it = m_unhandled_tps.begin(); it != m_unhandled_tps.end();) {
-    auto tp = *it;
-    if (tp->finished()) {
-      m_touch_points.erase(tp->id());
-      it = m_unhandled_tps.erase(it);
-    } else {
-      ++it;
-    }
-  }
+  cleanup_inactive_touch_points();
 
   m_gestures_mutex.unlock();
   m_tp_mutex.unlock();
@@ -297,6 +288,19 @@ void GestureRecognizer::detect_4finger_pinches() {
         // we don't have to check further combinations of these
         break;
       }
+    }
+  }
+}
+
+void GestureRecognizer::cleanup_inactive_touch_points() {
+  // remove unhandled touch points that are not active anymore
+  for (auto it = m_unhandled_tps.begin(); it != m_unhandled_tps.end();) {
+    auto tp = *it;
+    if (tp->finished()) {
+      m_touch_points.erase(tp->id());
+      it = m_unhandled_tps.erase(it);
+    } else {
+      ++it;
     }
   }
 }
