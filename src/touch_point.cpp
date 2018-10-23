@@ -97,6 +97,13 @@ bool TouchPoint::finished() const {
   return m_end_time != time_point::min();
 }
 
+double TouchPoint::age() const {
+  return std::chrono::duration_cast<std::chrono::milliseconds>(
+             clock_type::now() - m_start_time)
+             .count() /
+         1000.0;
+}
+
 double TouchPoint::duration() const {
   auto end = m_end_time;
   if (!finished()) {

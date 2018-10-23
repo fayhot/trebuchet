@@ -38,6 +38,7 @@ class TouchPoint {
   time_point end_time() const;
 
   bool finished() const;
+  double age() const;
   double duration() const;
   double finished_since() const;
 
