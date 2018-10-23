@@ -18,6 +18,22 @@ const std::set<std::shared_ptr<TouchPoint>> Gesture::touch_points() const {
   return m_touch_points;
 }
 
+Vec2 Gesture::pos() const {
+  auto positions = std::vector<Vec2>();
+  std::transform(m_touch_points.begin(), m_touch_points.end(),
+                 std::back_inserter(positions),
+                 [&](auto& tp) { return tp->pos(); });
+  return centroid(positions);
+}
+
+Vec2 Gesture::velocity() const {
+  auto velocities = std::vector<Vec2>();
+  std::transform(m_touch_points.begin(), m_touch_points.end(),
+                 std::back_inserter(velocities),
+                 [&](auto& tp) { return tp->velocity(); });
+  return centroid(velocities);
+}
+
 bool Gesture::finished() const {
   for (auto tp : m_touch_points) {
     if (!tp->finished()) {
@@ -41,6 +57,13 @@ double Gesture::time_finished() const {
         }
       });
   return *std::min_element(times.begin(), times.end());
+}
+
+double Gesture::age() const {
+  auto ages = std::vector<double>();
+  std::transform(m_touch_points.begin(), m_touch_points.end(),
+                 std::back_inserter(ages), [&](auto& tp) { return tp->age(); });
+  return *std::max_element(ages.begin(), ages.end());
 }
 
 std::ostream& Gesture::print_touch_points(std::ostream& stream) const {

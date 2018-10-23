@@ -18,8 +18,12 @@ class Gesture {
 
   const std::set<std::shared_ptr<TouchPoint>> touch_points() const;
 
+  Vec2 pos() const;
+  Vec2 velocity() const;
+
   virtual bool finished() const;
   virtual double time_finished() const;
+  virtual double age() const;
 
   std::ostream& print_touch_points(std::ostream& stream) const;
   virtual std::ostream& print(std::ostream& stream) const;
@@ -32,4 +36,5 @@ class Gesture {
 
  protected:
   std::set<std::shared_ptr<TouchPoint>> m_touch_points;
+  time_point m_start_time;
 };
