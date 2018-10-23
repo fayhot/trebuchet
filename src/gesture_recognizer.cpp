@@ -116,7 +116,7 @@ void GestureRecognizer::detect_flings() {
       // threshold
       bool min_velocity = true;
       for (auto& tp : tps) {
-        auto velocity = (tp->velocity() * m_screen_size).length();
+        auto velocity = tuio_to_meters(tp->velocity()).length();
         if (velocity < FLING_MIN_VELOCITY || tp->velocity().length() < 0.0001) {
           min_velocity = false;
         }
