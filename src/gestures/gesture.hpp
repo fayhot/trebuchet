@@ -13,7 +13,7 @@
 class Gesture {
  public:
   Gesture() = default;
-  Gesture(const std::set<std::shared_ptr<TouchPoint>>& tps);
+  Gesture(std::set<std::shared_ptr<TouchPoint>> tps);
   ~Gesture() = default;
 
   const std::set<std::shared_ptr<TouchPoint>> touch_points() const;

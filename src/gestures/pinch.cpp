@@ -1,7 +1,7 @@
 #include <gestures/pinch.hpp>
 
-Pinch::Pinch(const std::set<std::shared_ptr<TouchPoint>>& first_cluster,
-             const std::set<std::shared_ptr<TouchPoint>>& second_cluster)
+Pinch::Pinch(std::set<std::shared_ptr<TouchPoint>> first_cluster,
+             std::set<std::shared_ptr<TouchPoint>> second_cluster)
     : m_first_cluster(first_cluster), m_second_cluster(second_cluster) {
   m_touch_points.insert(first_cluster.begin(), first_cluster.end());
   m_touch_points.insert(second_cluster.begin(), second_cluster.end());

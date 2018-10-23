@@ -1,6 +1,6 @@
 #include <gestures/gesture.hpp>
 
-Gesture::Gesture(const std::set<std::shared_ptr<TouchPoint>>& tps)
+Gesture::Gesture(std::set<std::shared_ptr<TouchPoint>> tps)
     : m_touch_points(tps) {}
 
 Gesture::Gesture(Gesture&& other) noexcept {

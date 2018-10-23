@@ -7,7 +7,7 @@
 
 class LongTap : public Tap {
  public:
-  LongTap(const std::shared_ptr<TouchPoint>& tp);
+  LongTap(std::shared_ptr<TouchPoint> tp);
 
   std::ostream& print(std::ostream& stream) const override;
 };

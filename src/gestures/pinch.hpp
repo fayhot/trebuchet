@@ -10,8 +10,8 @@
 
 class Pinch : public Gesture {
  public:
-  Pinch(const std::set<std::shared_ptr<TouchPoint>>& first_cluster,
-        const std::set<std::shared_ptr<TouchPoint>>& second_cluster);
+  Pinch(std::set<std::shared_ptr<TouchPoint>> first_cluster,
+        std::set<std::shared_ptr<TouchPoint>> second_cluster);
 
   std::ostream& print(std::ostream& stream) const override;
 
@@ -23,10 +23,10 @@ class Pinch : public Gesture {
   bool horizontal() const;
   bool vertical() const;
 
-protected:
+ protected:
   const double DIRECTION_ANGLE_THRESHOLD = 0.2 * M_PI;
 
-protected:
+ protected:
   std::set<std::shared_ptr<TouchPoint>> m_first_cluster;
   std::set<std::shared_ptr<TouchPoint>> m_second_cluster;
 

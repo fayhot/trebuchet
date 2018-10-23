@@ -6,7 +6,7 @@
 
 class Fling : public Gesture {
  public:
-  Fling(const std::set<std::shared_ptr<TouchPoint>>& tps);
+  Fling(std::set<std::shared_ptr<TouchPoint>> tps);
 
   std::ostream& print(std::ostream& stream) const override;
 };
