@@ -1,5 +1,7 @@
 #include <gestures/fling.hpp>
 
+Fling::Fling(std::shared_ptr<TouchPoint> tp) : Gesture({tp}) {}
+
 Fling::Fling(std::set<std::shared_ptr<TouchPoint>> tps) : Gesture(tps) {}
 
 std::ostream& Fling::print(std::ostream& stream) const {
