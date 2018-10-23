@@ -62,16 +62,16 @@ class GestureRecognizer {
   Vec2 tuio_to_meters(const Vec2& pos) const;
 
  protected:
-  const double TAP_MAX_DURATION = 0.3;
-  const double TAP_MAX_DISTANCE = 0.005;
+  const double TAP_MAX_DURATION = 0.3;    // in s
+  const double TAP_MAX_DISTANCE = 0.005;  // in m
 
-  const double LONG_TAP_MIN_DURATION = 0.5;
+  const double LONG_TAP_MIN_DURATION = 0.5;  // in s
 
-  const double DOUBLE_TAP_MAX_DISTANCE = 0.02;
-  const double DOUBLE_TAP_MAX_PAUSE = 0.2;
+  const double DOUBLE_TAP_MAX_DISTANCE = 0.02;  // in m
+  const double DOUBLE_TAP_MAX_PAUSE = 0.2;      // in s
 
-  const double PINCH_MIN_ANGLE_BETWEEN_CLUSTERS = 0.75 * M_PI;
-  const double PINCH_MAX_ANGLE_DIFF_IN_CLUSTERS = 0.25 * M_PI;
+  const double PINCH_MIN_ANGLE_BETWEEN_CLUSTERS = 0.75 * M_PI;  // in rad
+  const double PINCH_MAX_ANGLE_DIFF_IN_CLUSTERS = 0.25 * M_PI;  // in rad
 
   const int32_t FLING_MAX_NUM_FINGERS = 3;
   const double FLING_MIN_VELOCITY = 0.5;           // in m/s
