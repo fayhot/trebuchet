@@ -247,35 +247,38 @@ void GestureRecognizer::detect_4finger_pinches() {
     }
 
     for (auto indices : PINCH2F_TP_INDICES) {
-      auto pos0 = touch_points[indices[0]]->pos();
-      auto pos1 = touch_points[indices[1]]->pos();
-      auto pos2 = touch_points[indices[2]]->pos();
-      auto pos3 = touch_points[indices[3]]->pos();
+      auto tp0 = touch_points[indices[0]];
+      auto tp1 = touch_points[indices[1]];
+      auto tp2 = touch_points[indices[2]];
+      auto tp3 = touch_points[indices[3]];
 
       // check if the angle between the two positions in a cluster have an angle
       // between them that is too large
-      if (angle(pos0, pos1) > PINCH_MAX_ANGLE_DIFF_IN_CLUSTERS ||
-          angle(pos2, pos3) > PINCH_MAX_ANGLE_DIFF_IN_CLUSTERS) {
+      if (angle(tp0->pos(), tp1->pos()) > PINCH_MAX_ANGLE_DIFF_IN_CLUSTERS ||
+          angle(tp2->pos(), tp3->pos()) > PINCH_MAX_ANGLE_DIFF_IN_CLUSTERS) {
         continue;
       }
 
-      auto cluster0_velocity = 0.5 * (touch_points[indices[0]]->velocity() +
-                                      touch_points[indices[1]]->velocity());
-      auto cluster1_velocity = 0.5 * (touch_points[indices[2]]->velocity() +
-                                      touch_points[indices[3]]->velocity());
+      // compute the average velocity of each cluster
+      auto cluster0_velocity = 0.5 * (tp0->velocity() + tp1->velocity());
+      auto cluster1_velocity = 0.5 * (tp2->velocity() + tp3->velocity());
 
       if (angle(cluster0_velocity, cluster1_velocity) >=
           PINCH_MIN_ANGLE_BETWEEN_CLUSTERS) {
+        // pinch detected, create the gesture event
         auto pinch = std::make_shared<Pinch>(
-            std::set<std::shared_ptr<TouchPoint>>{touch_points[indices[0]],
-                                                  touch_points[indices[1]]},
-            std::set<std::shared_ptr<TouchPoint>>{touch_points[indices[2]],
-                                                  touch_points[indices[3]]});
+            std::set<std::shared_ptr<TouchPoint>>{tp0, tp1},
+            std::set<std::shared_ptr<TouchPoint>>{tp2, tp3});
         add_gesture_event(pinch, GestureEvent::START);
-        m_unhandled_tps.erase(touch_points[0]);
-        m_unhandled_tps.erase(touch_points[1]);
-        m_unhandled_tps.erase(touch_points[2]);
-        m_unhandled_tps.erase(touch_points[3]);
+
+        // remove the used touch points from the unhandled set
+        m_unhandled_tps.erase(tp0);
+        m_unhandled_tps.erase(tp1);
+        m_unhandled_tps.erase(tp2);
+        m_unhandled_tps.erase(tp3);
+
+        // the current four touch points were detected as a 4-finger-pinch and
+        // we don't have to check further combinations of these
         break;
       }
     }
