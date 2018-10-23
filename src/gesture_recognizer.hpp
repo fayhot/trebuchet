@@ -52,6 +52,7 @@ class GestureRecognizer {
 
   void cleanup_inactive_touch_points();
   void fire_verified_taps();
+  void fire_verified_flings();
   void remove_finished_gestures();
 
   bool only_unhandled_tps(
@@ -74,8 +75,10 @@ class GestureRecognizer {
   const double PINCH_MAX_ANGLE_DIFF_IN_CLUSTERS = 0.25 * M_PI;  // in rad
 
   const int32_t FLING_MAX_NUM_FINGERS = 3;
-  const double FLING_MIN_VELOCITY = 0.5;           // in m/s
-  const double FLING_MAX_ANGLE_DIFF = 0.2 * M_PI;  // in rad
+  const double FLING_MULTI_FINGER_MAX_TIME_BETWEEN = 0.4;  // in s
+  const double FLING_MIN_VELOCITY = 0.5;                   // in m/s
+  const double FLING_MAX_ANGLE_DIFF = 0.1 * M_PI;          // in rad
+  const double FLING_MAX_DISTANCE = 0.1;                   // in m
 
   const std::vector<std::array<std::size_t, 4>> PINCH2F_TP_INDICES = {
       {0, 1, 2, 3},
@@ -95,6 +98,7 @@ class GestureRecognizer {
 
   std::set<std::shared_ptr<TouchPoint>> m_unhandled_tps;
   std::set<std::shared_ptr<Tap>> m_possible_taps;
+  std::set<std::shared_ptr<Fling>> m_flings;
   std::set<std::shared_ptr<Gesture>> m_active_gestures;
 
   std::deque<GestureEventPair> m_gesture_events;

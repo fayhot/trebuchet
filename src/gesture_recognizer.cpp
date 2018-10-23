@@ -34,6 +34,7 @@ void GestureRecognizer::start() {
 std::deque<GestureEventPair> GestureRecognizer::update() {
   m_tp_mutex.lock();
   fire_verified_taps();
+  fire_verified_flings();
   remove_finished_gestures();
   m_tp_mutex.unlock();
 
@@ -98,51 +99,34 @@ void GestureRecognizer::end_bundle(int32_t fseq) {
 }
 
 void GestureRecognizer::detect_flings() {
-  for (auto&& num_fingers : iter::range(FLING_MAX_NUM_FINGERS, 0, -1)) {
-    auto unhandled_tps = m_unhandled_tps;
-    for (auto&& touch_points : iter::combinations(unhandled_tps, num_fingers)) {
-      std::set<std::shared_ptr<TouchPoint>> tps;
-      for (uint32_t i = 0; i < num_fingers; ++i) {
-        tps.insert(touch_points[i]);
-      }
+  // detect flings with one touch point
+  for (auto it = m_unhandled_tps.begin(); it != m_unhandled_tps.end();) {
+    auto tp = *it;
 
-      // check if the touch points are all still unhandled and were not detected
-      // as a fling in a previous iteration
-      if (!only_unhandled_tps(tps)) {
-        continue;
-      }
-
-      // check if the velocities of all touch points are above the velocity
-      // threshold
-      bool min_velocity = true;
-      for (auto& tp : tps) {
-        auto velocity = tuio_to_meters(tp->velocity()).length();
-        if (velocity < FLING_MIN_VELOCITY || tp->velocity().length() < 0.0001) {
-          min_velocity = false;
-        }
-      }
-      if (!min_velocity) {
-        continue;
-      }
-
-      // check if the maximum angle between the touch points is exceeded by any
-      // pair of two touch points
-      if (num_fingers > 1) {
-        auto max_angle = 0.0;
-        for (auto&& tp_pair : iter::combinations(touch_points, 2)) {
-          max_angle = std::max(
-              max_angle, angle(tp_pair[0]->velocity(), tp_pair[1]->velocity()));
-        }
-        if (max_angle > FLING_MAX_ANGLE_DIFF) {
-          continue;
+    // check if the conditions of a fling are met
+    if (tuio_to_meters(tp->velocity()).length() >= FLING_MIN_VELOCITY) {
+      bool part_of_other_fling = false;
+      // check if this fling is part of another fling
+      for (auto& fling : m_flings) {
+        if (angle(fling->velocity(), tp->velocity()) < FLING_MAX_ANGLE_DIFF &&
+            distance(tuio_to_meters(fling->pos()), tuio_to_meters(tp->pos())) <
+                FLING_MAX_DISTANCE) {
+          if (fling->add_touch_point(tp)) {
+            part_of_other_fling = true;
+            break;
+          }
         }
       }
 
-      // all conditions were met; we have a fling
-      add_gesture_event(std::make_shared<Fling>(tps), GestureEvent::START);
-      for (auto& tp : tps) {
-        m_unhandled_tps.erase(tp);
+      // create a new fling gesture if this touch point was not part of another
+      // fling
+      if (!part_of_other_fling) {
+        m_flings.emplace(std::make_shared<Fling>(tp));
       }
+
+      it = m_unhandled_tps.erase(it);
+    } else {
+      ++it;
     }
   }
 }
@@ -311,6 +295,19 @@ void GestureRecognizer::fire_verified_taps() {
     if (tap->time_finished() > DOUBLE_TAP_MAX_PAUSE) {
       add_gesture_event(tap, GestureEvent::TRIGGER);
       it = m_possible_taps.erase(it);
+    } else {
+      ++it;
+    }
+  }
+}
+
+void GestureRecognizer::fire_verified_flings() {
+  for (auto it = m_flings.begin(); it != m_flings.end();) {
+    auto fling = *it;
+
+    if (fling->age() > FLING_MULTI_FINGER_MAX_TIME_BETWEEN) {
+      add_gesture_event(fling, GestureEvent::START);
+      it = m_flings.erase(it);
     } else {
       ++it;
     }
