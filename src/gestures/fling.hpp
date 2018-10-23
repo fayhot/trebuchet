@@ -9,5 +9,10 @@ class Fling : public Gesture {
   Fling(std::shared_ptr<TouchPoint> tp);
   Fling(std::set<std::shared_ptr<TouchPoint>> tps);
 
+  bool add_touch_point(std::shared_ptr<TouchPoint> tp);
+
   std::ostream& print(std::ostream& stream) const override;
+
+ protected:
+  static const uint32_t MAX_FINGERS = 4;
 };
