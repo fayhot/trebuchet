@@ -108,8 +108,8 @@ void GestureRecognizer::end_bundle(int32_t fseq) {
 
 void GestureRecognizer::detect_flings() {
   for (auto&& num_fingers : iter::range(FLING_MAX_NUM_FINGERS, 0, -1)) {
-    for (auto&& touch_points :
-         iter::combinations(m_unhandled_tps, num_fingers)) {
+    auto unhandled_tps = m_unhandled_tps;
+    for (auto&& touch_points : iter::combinations(unhandled_tps, num_fingers)) {
       std::set<std::shared_ptr<TouchPoint>> tps;
       for (uint32_t i = 0; i < num_fingers; ++i) {
         tps.insert(touch_points[i]);
@@ -192,7 +192,15 @@ void GestureRecognizer::detect_double_taps() {
     return;
   }
 
-  for (auto&& taps : iter::combinations(m_possible_taps, 2)) {
+  auto possible_taps = m_possible_taps;
+  for (auto&& taps : iter::combinations(possible_taps, 2)) {
+    // check if all of these taps are still in the possible taps set
+    if (!std::all_of(taps.begin(), taps.end(), [&](auto& tap) {
+          return m_possible_taps.find(tap) != m_possible_taps.end();
+        })) {
+      continue;
+    }
+
     // compute the properties of the tap combination
     auto pause = std::abs(std::chrono::duration_cast<std::chrono::milliseconds>(
                               taps[0]->touch_point()->end_time() -
@@ -219,7 +227,14 @@ void GestureRecognizer::detect_2finger_pinches() {
     return;
   }
 
-  for (auto&& touch_points : iter::combinations(m_unhandled_tps, 2)) {
+  auto unhandled_tps = m_unhandled_tps;
+  for (auto&& touch_points : iter::combinations(unhandled_tps, 2)) {
+    // check if all touch points are still unhandled and have not been detected
+    // as part of a pinch in a previous iteration
+    if (!only_unhandled_tps({touch_points[0], touch_points[1]})) {
+      continue;
+    }
+
     if (angle(touch_points[0]->velocity(), touch_points[1]->velocity()) >=
         PINCH_MIN_ANGLE_BETWEEN_CLUSTERS) {
       auto pinch = std::make_shared<Pinch>(
@@ -238,7 +253,8 @@ void GestureRecognizer::detect_4finger_pinches() {
     return;
   }
 
-  for (auto&& touch_points : iter::combinations(m_unhandled_tps, 4)) {
+  auto unhandled_tps = m_unhandled_tps;
+  for (auto&& touch_points : iter::combinations(unhandled_tps, 4)) {
     // check if all touch points are still unhandled and have not been detected
     // as part of a pinch in a previous iteration
     if (!only_unhandled_tps({touch_points[0], touch_points[1], touch_points[2],
