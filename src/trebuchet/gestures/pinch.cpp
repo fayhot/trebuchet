@@ -68,3 +68,7 @@ bool Pinch::horizontal() const {
 bool Pinch::vertical() const {
   return m_vertical;
 }
+
+uint32_t Pinch::num_fingers() const {
+  return m_touch_points.size() / 2;
+}

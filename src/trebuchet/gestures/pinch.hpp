@@ -22,6 +22,7 @@ class Pinch : public Gesture {
   Vec2 direction() const;
   bool horizontal() const;
   bool vertical() const;
+  uint32_t num_fingers() const;
 
  protected:
   const double DIRECTION_ANGLE_THRESHOLD = 0.2 * M_PI;
