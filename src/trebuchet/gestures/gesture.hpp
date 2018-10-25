@@ -37,6 +37,5 @@ class Gesture {
 
  protected:
   std::set<std::shared_ptr<TouchPoint>> m_touch_points;
-  time_point m_start_time;
   Vec2 m_start_pos;
 };
