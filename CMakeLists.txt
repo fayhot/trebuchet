@@ -10,7 +10,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_subdirectory(external/liblo/cmake)
 
 # build the trebuchet library
-set(SOURCE_DIR "src")
+set(SOURCE_DIR "src/trebuchet")
 include_directories(external)
 include_directories(${SOURCE_DIR})
 set(TREBUCHET_SOURCES
