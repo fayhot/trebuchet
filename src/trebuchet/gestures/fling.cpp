@@ -12,6 +12,10 @@ bool Fling::add_touch_point(std::shared_ptr<TouchPoint> tp) {
   return true;
 }
 
+uint32_t Fling::num_fingers() const {
+  return m_touch_points.size();
+}
+
 std::ostream& Fling::print(std::ostream& stream) const {
   stream << "Fling" << m_touch_points.size() << " <";
   print_touch_points(stream);

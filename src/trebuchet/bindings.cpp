@@ -78,7 +78,8 @@ PYBIND11_MODULE(trebuchet, m) {
       .def_property_readonly("horizontal", &Pinch::horizontal)
       .def_property_readonly("vertical", &Pinch::vertical);
 
-  py::class_<Fling, std::shared_ptr<Fling>, Gesture>(m, "Fling");
+  py::class_<Fling, std::shared_ptr<Fling>, Gesture>(m, "Fling")
+      .def_property_readonly("num_fingers", &Fling::num_fingers);
 
   py::class_<GestureRecognizer>(m, "GestureRecognizer")
       .def(py::init<>())
