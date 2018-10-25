@@ -60,3 +60,11 @@ double Pinch::distance() const {
 Vec2 Pinch::direction() const {
   return second_center() - first_center();
 }
+
+bool Pinch::horizontal() const {
+  return m_horizontal;
+}
+
+bool Pinch::vertical() const {
+  return m_vertical;
+}
