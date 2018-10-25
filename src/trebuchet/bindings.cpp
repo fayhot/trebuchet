@@ -43,6 +43,10 @@ PYBIND11_MODULE(trebuchet, m) {
   py::class_<Gesture, std::shared_ptr<Gesture>>(m, "Gesture")
       .def(py::init<>())
       .def_property_readonly("touch_points", &Gesture::touch_points)
+      .def_property_readonly("start_pos",
+                             [](const Gesture& gesture) {
+                               return vec_to_tuple(gesture.start_pos());
+                             })
       .def_property_readonly(
           "pos",
           [](const Gesture& gesture) { return vec_to_tuple(gesture.pos()); })

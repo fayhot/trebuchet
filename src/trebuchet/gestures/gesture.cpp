@@ -1,21 +1,32 @@
 #include <gestures/gesture.hpp>
 
 Gesture::Gesture(std::set<std::shared_ptr<TouchPoint>> tps)
-    : m_touch_points(tps) {}
+    : m_touch_points(tps) {
+  std::vector<Vec2> start_positions;
+  std::transform(tps.begin(), tps.end(), std::back_inserter(start_positions),
+                 [](auto& tp) { return tp->start_pos(); });
+  m_start_pos = centroid(start_positions);
+}
 
 Gesture::Gesture(Gesture&& other) noexcept {
   std::swap(m_touch_points, other.m_touch_points);
+  std::swap(m_start_pos, other.m_start_pos);
 }
 
 Gesture& Gesture::operator=(Gesture&& other) noexcept {
   if (this != &other) {
     std::swap(m_touch_points, other.m_touch_points);
+    std::swap(m_start_pos, other.m_start_pos);
   }
   return *this;
 }
 
 const std::set<std::shared_ptr<TouchPoint>> Gesture::touch_points() const {
   return m_touch_points;
+}
+
+const Vec2& Gesture::start_pos() const {
+  return m_start_pos;
 }
 
 Vec2 Gesture::pos() const {
