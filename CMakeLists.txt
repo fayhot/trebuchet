@@ -19,15 +19,16 @@ set(TREBUCHET_SOURCES
   "${SOURCE_DIR}/touch_point.cpp"
 
   "${SOURCE_DIR}/gestures/gesture.cpp"
+  "${SOURCE_DIR}/gestures/gesture_event.cpp"
   "${SOURCE_DIR}/gestures/tap.cpp"
   "${SOURCE_DIR}/gestures/long_tap.cpp"
   "${SOURCE_DIR}/gestures/double_tap.cpp"
   "${SOURCE_DIR}/gestures/pinch.cpp"
   "${SOURCE_DIR}/gestures/fling.cpp"
 )
-add_library(trebuchet SHARED ${TREBUCHET_SOURCES})
-target_link_libraries(trebuchet lo_shared)
-
-# build the demo application
-add_executable(demo "${SOURCE_DIR}/demo.cpp")
-target_link_libraries(demo trebuchet)
+add_subdirectory(external/pybind11)
+pybind11_add_module(trebuchet
+  ${TREBUCHET_SOURCES}
+  "${SOURCE_DIR}/bindings.cpp"
+)
+target_link_libraries(trebuchet PRIVATE lo_shared)
