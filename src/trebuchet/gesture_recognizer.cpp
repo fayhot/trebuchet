@@ -5,6 +5,22 @@ GestureRecognizer::GestureRecognizer(uint32_t port)
       m_screen_size(0.597, 0.336),
       m_liblo_st(std::make_unique<lo::ServerThread>(port)) {}
 
+void GestureRecognizer::set_screen_resolution(const Vec2& screen_resolution) {
+  m_screen_resolution = screen_resolution;
+}
+
+void GestureRecognizer::set_screen_size(const Vec2& screen_size) {
+  m_screen_size = screen_size;
+}
+
+const Vec2& GestureRecognizer::get_screen_resolution() {
+  return m_screen_resolution;
+}
+
+const Vec2& GestureRecognizer::get_screen_size() {
+  return m_screen_size;
+}
+
 void GestureRecognizer::start() {
   m_liblo_st->add_method(
       "/tuio/2Dcur", nullptr, [this](lo_arg** argv, int argc) {

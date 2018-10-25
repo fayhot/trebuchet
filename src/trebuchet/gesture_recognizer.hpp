@@ -32,6 +32,12 @@ class GestureRecognizer {
   GestureRecognizer(const GestureRecognizer&) = delete;
   ~GestureRecognizer() = default;
 
+  void set_screen_resolution(const Vec2& screen_resolution);
+  void set_screen_size(const Vec2& screen_size);
+
+  const Vec2& get_screen_resolution();
+  const Vec2& get_screen_size();
+
   void start();
   std::vector<GestureEventPair> update();
 

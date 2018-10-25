@@ -82,6 +82,24 @@ PYBIND11_MODULE(trebuchet, m) {
 
   py::class_<GestureRecognizer>(m, "GestureRecognizer")
       .def(py::init<>())
+      .def_property("screen_resolution",
+                    [](GestureRecognizer& recognizer) {
+                      return vec_to_tuple(recognizer.get_screen_resolution());
+                    },
+                    [](GestureRecognizer& recognizer,
+                       const std::tuple<double, double>& resolution) {
+                      recognizer.set_screen_resolution(Vec2(
+                          std::get<0>(resolution), std::get<1>(resolution)));
+                    })
+      .def_property("screen_size",
+                    [](GestureRecognizer& recognizer) {
+                      return vec_to_tuple(recognizer.get_screen_size());
+                    },
+                    [](GestureRecognizer& recognizer,
+                       const std::tuple<double, double>& size) {
+                      recognizer.set_screen_size(
+                          Vec2(std::get<0>(size), std::get<1>(size)));
+                    })
       .def("update", &GestureRecognizer::update)
       .def("start", &GestureRecognizer::start);
 }
