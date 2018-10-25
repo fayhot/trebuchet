@@ -54,7 +54,7 @@ PYBIND11_MODULE(trebuchet, m) {
                              [](const Gesture& gesture) {
                                return vec_to_tuple(gesture.velocity());
                              })
-      .def("finished", &Gesture::finished)
+      .def_property_readonly("finished", &Gesture::finished)
       .def("time_finished", &Gesture::time_finished);
 
   py::class_<Tap, std::shared_ptr<Tap>, Gesture>(m, "Tap")
