@@ -107,6 +107,7 @@ void GestureRecognizer::end_bundle(int32_t fseq) {
   detect_4finger_pinches();
   detect_2finger_pinches();
   detect_flings();
+  detect_swipes();
 
   cleanup_inactive_touch_points();
 
@@ -288,6 +289,19 @@ void GestureRecognizer::detect_4finger_pinches() {
         // we don't have to check further combinations of these
         break;
       }
+    }
+  }
+}
+
+void GestureRecognizer::detect_swipes() {
+  for (auto it = m_unhandled_tps.begin(); it != m_unhandled_tps.end();) {
+    auto tp = *it;
+    auto travel = (tp->travel() * m_screen_size).length();  // in m
+    if (travel > SWIPE_MIN_DISTANCE && tp->duration() > SWIPE_MIN_DURATION) {
+      add_gesture_event(std::make_shared<Swipe>(tp), GestureEvent::START);
+      it = m_unhandled_tps.erase(it);
+    } else {
+      ++it;
     }
   }
 }

@@ -25,6 +25,7 @@ set(TREBUCHET_SOURCES
   "${SOURCE_DIR}/gestures/double_tap.cpp"
   "${SOURCE_DIR}/gestures/pinch.cpp"
   "${SOURCE_DIR}/gestures/fling.cpp"
+  "${SOURCE_DIR}/gestures/swipe.cpp"
 )
 add_subdirectory(external/pybind11)
 pybind11_add_module(trebuchet
