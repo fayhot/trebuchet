@@ -11,7 +11,8 @@ TouchPoint::TouchPoint(int32_t id,
       m_start_pos(pos),
       m_pos(pos),
       m_velocity(velocity),
-      m_acceleration(acceleration) {}
+      m_acceleration(acceleration),
+      m_positions({pos}) {}
 
 TouchPoint::TouchPoint(TouchPoint&& other) noexcept {
   if (this != &other) {
@@ -20,6 +21,7 @@ TouchPoint::TouchPoint(TouchPoint&& other) noexcept {
     std::swap(m_pos, other.m_pos);
     std::swap(m_velocity, other.m_velocity);
     std::swap(m_acceleration, other.m_acceleration);
+    std::swap(m_positions, other.m_positions);
     std::swap(m_start_time, other.m_start_time);
     std::swap(m_update_time, other.m_update_time);
     std::swap(m_end_time, other.m_end_time);
@@ -33,6 +35,7 @@ TouchPoint& TouchPoint::operator=(TouchPoint&& other) noexcept {
     std::swap(m_pos, other.m_pos);
     std::swap(m_velocity, other.m_velocity);
     std::swap(m_acceleration, other.m_acceleration);
+    std::swap(m_positions, other.m_positions);
     std::swap(m_start_time, other.m_start_time);
     std::swap(m_update_time, other.m_update_time);
     std::swap(m_end_time, other.m_end_time);
@@ -51,6 +54,9 @@ void TouchPoint::update(const Vec2& pos,
   m_pos = pos;
   m_velocity = velocity;
   m_acceleration = acceleration;
+  if (pos != m_positions.back()) {
+    m_positions.push_back(pos);
+  }
 }
 
 void TouchPoint::end() {
@@ -79,6 +85,18 @@ const float TouchPoint::acceleration() const {
 
 Vec2 TouchPoint::direction() const {
   return m_pos - m_start_pos;
+}
+
+const std::vector<Vec2>& TouchPoint::positions() const {
+  return m_positions;
+}
+
+Vec2 TouchPoint::travel() const {
+  return std::accumulate(m_positions.begin(), m_positions.end(), Vec2(),
+                         [](auto& lhs, auto& rhs) {
+                           auto diff = rhs - lhs;
+                           return Vec2(std::abs(diff.x), std::abs(diff.y));
+                         });
 }
 
 time_point TouchPoint::start_time() const {
