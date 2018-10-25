@@ -24,6 +24,10 @@ class Pinch : public Gesture {
   bool vertical() const;
   uint32_t num_fingers() const;
 
+  const Vec2& start_center() const;
+  double start_distance() const;
+  const Vec2& start_direction() const;
+
  protected:
   const double DIRECTION_ANGLE_THRESHOLD = 0.2 * M_PI;
 

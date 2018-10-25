@@ -72,3 +72,15 @@ bool Pinch::vertical() const {
 uint32_t Pinch::num_fingers() const {
   return m_touch_points.size() / 2;
 }
+
+const Vec2& Pinch::start_center() const {
+  return m_start_center;
+}
+
+double Pinch::start_distance() const {
+  return m_start_distance;
+}
+
+const Vec2& Pinch::start_direction() const {
+  return m_start_direction;
+}
