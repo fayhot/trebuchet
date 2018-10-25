@@ -89,7 +89,16 @@ PYBIND11_MODULE(trebuchet, m) {
           [](const Fling& fling) { return vec_to_tuple(fling.direction()); })
       .def_property_readonly("num_fingers", &Fling::num_fingers);
 
-  py::class_<Swipe, std::shared_ptr<Swipe>, Gesture>(m, "Swipe");
+  py::class_<Swipe, std::shared_ptr<Swipe>, Gesture>(m, "Swipe")
+      .def_property_readonly("positions", [](const Swipe& swipe) {
+        std::vector<std::tuple<double, double>> pos_tuples;
+        auto positions = swipe.positions();
+        pos_tuples.reserve(positions.size());
+        std::transform(positions.begin(), positions.end(),
+                       std::back_inserter(pos_tuples),
+                       [](auto& pos) { return vec_to_tuple(pos); });
+        return pos_tuples;
+      });
 
   py::class_<GestureRecognizer>(m, "GestureRecognizer")
       .def(py::init<>())
