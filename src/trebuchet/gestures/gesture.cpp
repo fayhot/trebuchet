@@ -2,10 +2,7 @@
 
 Gesture::Gesture(std::set<std::shared_ptr<TouchPoint>> tps)
     : m_touch_points(tps) {
-  std::vector<Vec2> start_positions;
-  std::transform(tps.begin(), tps.end(), std::back_inserter(start_positions),
-                 [](auto& tp) { return tp->start_pos(); });
-  m_start_pos = centroid(start_positions);
+  m_start_pos = pos();
 }
 
 Gesture::Gesture(Gesture&& other) noexcept {
