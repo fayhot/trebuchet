@@ -69,7 +69,8 @@ std::ostream& operator<<(std::ostream& stream, const Vec2& vec) {
 }
 
 bool operator==(const Vec2& lhs, const Vec2& rhs) {
-  return (lhs.x == rhs.x) && (lhs.y == rhs.y);
+  return almost_equal_relative(lhs.x, rhs.x) &&
+         almost_equal_relative(lhs.y, rhs.y);
 }
 
 bool operator!=(const Vec2& lhs, const Vec2& rhs) {

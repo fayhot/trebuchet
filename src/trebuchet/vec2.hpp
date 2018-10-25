@@ -7,6 +7,8 @@
 #include <utility>
 #include <vector>
 
+#include <utils.hpp>
+
 struct Vec2 {
   Vec2() = default;
   Vec2(double x, double y);
