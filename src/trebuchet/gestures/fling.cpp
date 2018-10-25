@@ -16,6 +16,10 @@ uint32_t Fling::num_fingers() const {
   return m_touch_points.size();
 }
 
+Vec2 Fling::direction() const {
+  return pos() - m_start_pos;
+}
+
 std::ostream& Fling::print(std::ostream& stream) const {
   stream << "Fling" << m_touch_points.size() << " <";
   print_touch_points(stream);

@@ -12,6 +12,7 @@ class Fling : public Gesture {
   bool add_touch_point(std::shared_ptr<TouchPoint> tp);
 
   uint32_t num_fingers() const;
+  Vec2 direction() const;
 
   std::ostream& print(std::ostream& stream) const override;
 
