@@ -31,7 +31,7 @@ void GestureRecognizer::start() {
   m_liblo_st->start();
 }
 
-std::deque<GestureEventPair> GestureRecognizer::update() {
+std::vector<GestureEventPair> GestureRecognizer::update() {
   m_tp_mutex.lock();
   fire_verified_taps();
   fire_verified_flings();
@@ -39,7 +39,7 @@ std::deque<GestureEventPair> GestureRecognizer::update() {
   m_tp_mutex.unlock();
 
   m_gestures_mutex.lock();
-  std::deque<GestureEventPair> gesture_events(std::move(m_gesture_events));
+  std::vector<GestureEventPair> gesture_events(std::move(m_gesture_events));
   m_gesture_events.clear();
   m_gestures_mutex.unlock();
   return gesture_events;

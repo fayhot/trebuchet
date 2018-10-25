@@ -6,7 +6,7 @@
 #include <map>
 #include <mutex>
 #include <set>
-#include <deque>
+#include <vector>
 
 #include <lo/lo.h>
 #include <lo/lo_cpp.h>
@@ -33,7 +33,7 @@ class GestureRecognizer {
   ~GestureRecognizer() = default;
 
   void start();
-  std::deque<GestureEventPair> update();
+  std::vector<GestureEventPair> update();
 
  protected:
   void start_bundle(const std::set<uint32_t>& alive_ids);
@@ -101,5 +101,5 @@ class GestureRecognizer {
   std::set<std::shared_ptr<Fling>> m_flings;
   std::set<std::shared_ptr<Gesture>> m_active_gestures;
 
-  std::deque<GestureEventPair> m_gesture_events;
+  std::vector<GestureEventPair> m_gesture_events;
 };
