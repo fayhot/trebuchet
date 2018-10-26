@@ -92,11 +92,15 @@ const std::vector<Vec2>& TouchPoint::positions() const {
 }
 
 Vec2 TouchPoint::travel() const {
-  return std::accumulate(m_positions.begin(), m_positions.end(), Vec2(),
-                         [](auto& lhs, auto& rhs) {
-                           auto diff = rhs - lhs;
-                           return Vec2(std::abs(diff.x), std::abs(diff.y));
-                         });
+  // sum up the absolute difference between pairs of positions
+  auto travel = Vec2(0.0, 0.0);
+  for (auto it = m_positions.begin(); it != std::prev(m_positions.end());
+       ++it) {
+    auto crrnt = *it;
+    auto next = *std::next(it);
+    travel += Vec2(std::abs(next.x - crrnt.x), std::abs(next.y - crrnt.y));
+  }
+  return travel;
 }
 
 time_point TouchPoint::start_time() const {
