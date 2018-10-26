@@ -227,7 +227,7 @@ void GestureRecognizer::detect_2finger_pinches() {
       continue;
     }
 
-    if (angle(touch_points[0]->velocity(), touch_points[1]->velocity()) >=
+    if (angle(touch_points[0]->direction(), touch_points[1]->direction()) >=
         PINCH_MIN_ANGLE_BETWEEN_CLUSTERS) {
       auto pinch = std::make_shared<Pinch>(
           std::set<std::shared_ptr<TouchPoint>>{touch_points[0]},
@@ -267,11 +267,11 @@ void GestureRecognizer::detect_4finger_pinches() {
         continue;
       }
 
-      // compute the average velocity of each cluster
-      auto cluster0_velocity = 0.5 * (tp0->velocity() + tp1->velocity());
-      auto cluster1_velocity = 0.5 * (tp2->velocity() + tp3->velocity());
+      // compute the average direction of each cluster
+      auto cluster0_direction = 0.5 * (tp0->direction() + tp1->direction());
+      auto cluster1_direction = 0.5 * (tp2->direction() + tp3->direction());
 
-      if (angle(cluster0_velocity, cluster1_velocity) >=
+      if (angle(cluster0_direction, cluster1_direction) >=
           PINCH_MIN_ANGLE_BETWEEN_CLUSTERS) {
         // pinch detected, create the gesture event
         auto pinch = std::make_shared<Pinch>(
