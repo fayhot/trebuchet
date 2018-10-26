@@ -22,6 +22,7 @@ TouchPoint::TouchPoint(TouchPoint&& other) noexcept {
     std::swap(m_velocity, other.m_velocity);
     std::swap(m_acceleration, other.m_acceleration);
     std::swap(m_positions, other.m_positions);
+    std::swap(m_travel, other.m_travel);
     std::swap(m_start_time, other.m_start_time);
     std::swap(m_update_time, other.m_update_time);
     std::swap(m_end_time, other.m_end_time);
@@ -36,6 +37,7 @@ TouchPoint& TouchPoint::operator=(TouchPoint&& other) noexcept {
     std::swap(m_velocity, other.m_velocity);
     std::swap(m_acceleration, other.m_acceleration);
     std::swap(m_positions, other.m_positions);
+    std::swap(m_travel, other.m_travel);
     std::swap(m_start_time, other.m_start_time);
     std::swap(m_update_time, other.m_update_time);
     std::swap(m_end_time, other.m_end_time);
@@ -55,6 +57,8 @@ void TouchPoint::update(const Vec2& pos,
   m_velocity = velocity;
   m_acceleration = acceleration;
   if (pos != m_positions.back()) {
+    m_travel += Vec2(std::abs(m_positions.back().x - pos.x),
+                     std::abs(m_positions.back().y - pos.y));
     m_positions.push_back(pos);
   }
 }
@@ -91,16 +95,8 @@ const std::vector<Vec2>& TouchPoint::positions() const {
   return m_positions;
 }
 
-Vec2 TouchPoint::travel() const {
-  // sum up the absolute difference between pairs of positions
-  auto travel = Vec2(0.0, 0.0);
-  for (auto it = m_positions.begin(); it != std::prev(m_positions.end());
-       ++it) {
-    auto crrnt = *it;
-    auto next = *std::next(it);
-    travel += Vec2(std::abs(next.x - crrnt.x), std::abs(next.y - crrnt.y));
-  }
-  return travel;
+const Vec2& TouchPoint::travel() const {
+  return m_travel;
 }
 
 time_point TouchPoint::start_time() const {

@@ -33,7 +33,7 @@ class TouchPoint {
   const float acceleration() const;
   Vec2 direction() const;
   const std::vector<Vec2>& positions() const;
-  Vec2 travel() const;
+  const Vec2& travel() const;
 
   time_point start_time() const;
   time_point update_time() const;
@@ -52,6 +52,7 @@ class TouchPoint {
   float m_acceleration;
 
   std::vector<Vec2> m_positions;
+  Vec2 m_travel;
 
   time_point m_start_time;
   time_point m_update_time;
