@@ -5,8 +5,8 @@
 
 #include <vec2.hpp>
 
-using clock_type = std::chrono::high_resolution_clock;
-using time_point = std::chrono::time_point<clock_type>;
+using Clock = std::chrono::high_resolution_clock;
+using TimePoint = std::chrono::time_point<Clock>;
 
 class TouchPoint {
  public:
@@ -35,9 +35,9 @@ class TouchPoint {
   const std::vector<Vec2>& positions() const;
   const Vec2& travel() const;
 
-  time_point start_time() const;
-  time_point update_time() const;
-  time_point end_time() const;
+  TimePoint start_time() const;
+  TimePoint update_time() const;
+  TimePoint end_time() const;
 
   bool finished() const;
   double age() const;
@@ -54,7 +54,7 @@ class TouchPoint {
   std::vector<Vec2> m_positions;
   Vec2 m_travel;
 
-  time_point m_start_time;
-  time_point m_update_time;
-  time_point m_end_time;
+  TimePoint m_start_time;
+  TimePoint m_update_time;
+  TimePoint m_end_time;
 };

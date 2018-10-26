@@ -8,7 +8,7 @@ const std::shared_ptr<TouchPoint> Tap::touch_point() const {
 
 double Tap::time_finished() const {
   return std::chrono::duration_cast<std::chrono::milliseconds>(
-             clock_type::now() - touch_point()->end_time())
+             Clock::now() - touch_point()->end_time())
              .count() /
          1000.0;
 }
