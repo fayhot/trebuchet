@@ -15,6 +15,7 @@ class Fling : public Gesture {
 
   uint32_t num_fingers() const;
   Vec2 direction() const;
+  double speed() const;
 
   std::string as_string() const override;
 

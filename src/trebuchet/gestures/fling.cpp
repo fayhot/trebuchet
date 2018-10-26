@@ -23,3 +23,11 @@ Vec2 Fling::direction() const {
 std::string Fling::as_string() const {
   return "<Fling [" + touch_points_string() + "]>";
 }
+
+double Fling::speed() const {
+  double delta_time =
+      std::chrono::duration_cast<std::chrono::milliseconds>(duration())
+          .count() /
+      1000.0;
+  return ((pos() - m_start_pos) / delta_time).length();
+}

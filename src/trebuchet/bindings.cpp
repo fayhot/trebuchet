@@ -97,7 +97,8 @@ PYBIND11_MODULE(trebuchet, m) {
       .def_property_readonly(
           "direction",
           [](const Fling& fling) { return vec_to_tuple(fling.direction()); })
-      .def_property_readonly("num_fingers", &Fling::num_fingers);
+      .def_property_readonly("num_fingers", &Fling::num_fingers)
+      .def_property_readonly("speed", &Fling::speed);
 
   py::class_<Swipe, std::shared_ptr<Swipe>, Gesture>(m, "Swipe")
       .def_property_readonly("positions", [](const Swipe& swipe) {
