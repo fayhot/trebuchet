@@ -12,7 +12,8 @@ TouchPoint::TouchPoint(int32_t id,
       m_pos(pos),
       m_velocity(velocity),
       m_acceleration(acceleration),
-      m_positions({pos}) {}
+      m_positions({pos}),
+      m_travel(0.0, 0.0) {}
 
 TouchPoint::TouchPoint(TouchPoint&& other) noexcept {
   if (this != &other) {
