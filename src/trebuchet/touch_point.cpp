@@ -113,34 +113,14 @@ TimePoint TouchPoint::end_time() const {
 }
 
 bool TouchPoint::finished() const {
-  return m_end_time != TimePoint::min();
+  return m_end_time > m_start_time;
 }
 
-double TouchPoint::age() const {
-  return std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() -
-                                                               m_start_time)
-             .count() /
-         1000.0;
-}
-
-double TouchPoint::duration() const {
-  auto end = m_end_time;
-  if (!finished()) {
-    end = Clock::now();
-  }
-  return std::chrono::duration_cast<std::chrono::milliseconds>(end -
-                                                               m_start_time)
-             .count() /
-         1000.0;
-}
-
-double TouchPoint::finished_since() const {
+std::chrono::microseconds TouchPoint::duration() const {
   if (finished()) {
-    auto now = Clock::now();
-    return std::chrono::duration_cast<std::chrono::milliseconds>(now -
-                                                                 m_end_time)
-               .count() /
-           1000.0;
+    return std::chrono::duration_cast<std::chrono::microseconds>(m_end_time -
+                                                                 m_start_time);
   }
-  return -1.0;
+  return std::chrono::duration_cast<std::chrono::microseconds>(Clock::now() -
+                                                               m_start_time);
 }

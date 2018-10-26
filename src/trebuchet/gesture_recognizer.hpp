@@ -71,25 +71,25 @@ class GestureRecognizer {
   Vec2 tuio_to_meters(const Vec2& pos) const;
 
  protected:
-  const double TAP_MAX_DURATION = 0.3;   // in s
-  const double TAP_MAX_DISTANCE = 0.01;  // in m
+  const std::chrono::milliseconds TAP_MAX_DURATION{300};
+  const double TAP_MAX_DISTANCE{0.01};  // in m
 
-  const double LONG_TAP_MIN_DURATION = 0.5;  // in s
+  const std::chrono::milliseconds LONG_TAP_MIN_DURATION{500};
 
-  const double DOUBLE_TAP_MAX_DISTANCE = 0.02;  // in m
-  const double DOUBLE_TAP_MAX_PAUSE = 0.2;      // in s
+  const double DOUBLE_TAP_MAX_DISTANCE{0.02};  // in m
+  const std::chrono::milliseconds DOUBLE_TAP_MAX_PAUSE{200};
 
-  const double PINCH_MIN_ANGLE_BETWEEN_CLUSTERS = 0.75 * M_PI;  // in rad
-  const double PINCH_MAX_ANGLE_DIFF_IN_CLUSTERS = 0.25 * M_PI;  // in rad
+  const double PINCH_MIN_ANGLE_BETWEEN_CLUSTERS{0.75 * M_PI};  // in rad
+  const double PINCH_MAX_ANGLE_DIFF_IN_CLUSTERS{0.25 * M_PI};  // in rad
 
-  const int32_t FLING_MAX_NUM_FINGERS = 3;
-  const double FLING_MULTI_FINGER_MAX_TIME_BETWEEN = 0.4;  // in s
-  const double FLING_MIN_VELOCITY = 0.5;                   // in m/s
-  const double FLING_MAX_ANGLE_DIFF = 0.1 * M_PI;          // in rad
-  const double FLING_MAX_DISTANCE = 0.1;                   // in m
+  const int32_t FLING_MAX_NUM_FINGERS{3};
+  const std::chrono::milliseconds FLING_MULTI_FINGER_MAX_TIME_BETWEEN{400};
+  const double FLING_MIN_VELOCITY{0.5};           // in m/s
+  const double FLING_MAX_ANGLE_DIFF{0.1 * M_PI};  // in rad
+  const double FLING_MAX_DISTANCE{0.1};           // in m
 
-  const double SWIPE_MIN_TRAVEL = 0.04;  // in m
-  const double SWIPE_MIN_DURATION = 0.4;   // in s
+  const double SWIPE_MIN_TRAVEL{0.04};  // in m
+  const std::chrono::milliseconds SWIPE_MIN_DURATION{400};
 
   const std::vector<std::array<std::size_t, 4>> PINCH2F_TP_INDICES = {
       {0, 1, 2, 3},

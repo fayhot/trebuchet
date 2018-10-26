@@ -28,11 +28,11 @@ PYBIND11_MODULE(trebuchet, m) {
       .def_property_readonly(
           "direction",
           [](const TouchPoint& tp) { return vec_to_tuple(tp.direction()); })
-      // TODO time getters
-      .def("finished", &TouchPoint::finished)
-      .def_property_readonly("age", &TouchPoint::age)
-      .def_property_readonly("duration", &TouchPoint::duration)
-      .def_property_readonly("finished_since", &TouchPoint::finished_since);
+      .def_property_readonly("start_time", &TouchPoint::start_time)
+      .def_property_readonly("update_time", &TouchPoint::update_time)
+      .def_property_readonly("end_time", &TouchPoint::end_time)
+      .def_property_readonly("finished", &TouchPoint::finished)
+      .def_property_readonly("duration", &TouchPoint::duration);
 
   py::enum_<GestureEvent>(m, "GestureEvent")
       .value("POSSIBLE", GestureEvent::POSSIBLE)
@@ -55,8 +55,10 @@ PYBIND11_MODULE(trebuchet, m) {
                              [](const Gesture& gesture) {
                                return vec_to_tuple(gesture.velocity());
                              })
-      .def_property_readonly("finished", &Gesture::finished)
-      .def("time_finished", &Gesture::time_finished);
+      .def_property_readonly("start_time", &Gesture::start_time)
+      .def_property_readonly("end_time", &Gesture::end_time)
+      .def_property_readonly("duration", &Gesture::duration)
+      .def_property_readonly("finished", &Gesture::finished);
 
   py::class_<Tap, std::shared_ptr<Tap>, Gesture>(m, "Tap")
       .def_property_readonly("touch_point", &Tap::touch_point);

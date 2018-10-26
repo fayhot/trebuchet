@@ -11,7 +11,5 @@ class Tap : public Gesture {
 
   const std::shared_ptr<TouchPoint> touch_point() const;
 
-  double time_finished() const override;
-
   std::string as_string() const override;
 };

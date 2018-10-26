@@ -49,6 +49,9 @@ void GestureRecognizer::start() {
 
 std::vector<GestureEventPair> GestureRecognizer::update() {
   m_tp_mutex.lock();
+  for (auto& gesture : m_active_gestures) {
+    gesture->update();
+  }
   fire_verified_taps();
   fire_verified_flings();
   remove_finished_gestures();
@@ -194,11 +197,8 @@ void GestureRecognizer::detect_double_taps() {
     }
 
     // compute the properties of the tap combination
-    auto pause = std::abs(std::chrono::duration_cast<std::chrono::milliseconds>(
-                              taps[0]->touch_point()->end_time() -
-                              taps[1]->touch_point()->end_time())
-                              .count() /
-                          1000.0);
+    auto pause =
+        taps[0]->touch_point()->end_time() - taps[1]->touch_point()->end_time();
     auto dist =
         distance(taps[0]->touch_point()->pos(), taps[1]->touch_point()->pos());
 
@@ -320,9 +320,16 @@ void GestureRecognizer::cleanup_inactive_touch_points() {
 }
 
 void GestureRecognizer::fire_verified_taps() {
+  auto now = Clock::now();
   for (auto it = m_possible_taps.begin(); it != m_possible_taps.end();) {
     auto tap = *it;
-    if (tap->time_finished() > DOUBLE_TAP_MAX_PAUSE) {
+    auto time_since_finished = now - tap->end_time();
+    // std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(
+    //                  time_since_finished)
+    //                      .count() /
+    //                  1000.0
+    //           << " " << tap->finished() << std::endl;
+    if (time_since_finished > DOUBLE_TAP_MAX_PAUSE) {
       add_gesture_event(tap, GestureEvent::TRIGGER);
       it = m_possible_taps.erase(it);
     } else {
@@ -335,7 +342,7 @@ void GestureRecognizer::fire_verified_flings() {
   for (auto it = m_flings.begin(); it != m_flings.end();) {
     auto fling = *it;
 
-    if (fling->age() > FLING_MULTI_FINGER_MAX_TIME_BETWEEN) {
+    if (fling->duration() > FLING_MULTI_FINGER_MAX_TIME_BETWEEN) {
       add_gesture_event(fling, GestureEvent::START);
       it = m_flings.erase(it);
     } else {

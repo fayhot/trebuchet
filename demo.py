@@ -8,7 +8,7 @@ def main():
     recognizer.start()
     while True:
         for gesture, event in recognizer.update():
-            print(event, gesture)
+            print(event, gesture, gesture.start_time)
 
 
 if __name__ == '__main__':

@@ -40,9 +40,7 @@ class TouchPoint {
   TimePoint end_time() const;
 
   bool finished() const;
-  double age() const;
-  double duration() const;
-  double finished_since() const;
+  std::chrono::microseconds duration() const;
 
  private:
   int32_t m_id;
