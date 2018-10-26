@@ -88,7 +88,7 @@ class GestureRecognizer {
   const double FLING_MAX_ANGLE_DIFF = 0.1 * M_PI;          // in rad
   const double FLING_MAX_DISTANCE = 0.1;                   // in m
 
-  const double SWIPE_MIN_DISTANCE = 0.02;  // in m
+  const double SWIPE_MIN_TRAVEL = 0.04;  // in m
   const double SWIPE_MIN_DURATION = 0.4;   // in s
 
   const std::vector<std::array<std::size_t, 4>> PINCH2F_TP_INDICES = {
