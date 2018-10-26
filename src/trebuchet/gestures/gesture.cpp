@@ -74,17 +74,15 @@ double Gesture::age() const {
   return *std::max_element(ages.begin(), ages.end());
 }
 
-std::ostream& Gesture::print_touch_points(std::ostream& stream) const {
+std::string Gesture::touch_points_string() const {
   auto it = m_touch_points.begin();
-  stream << std::to_string((*it++)->id());
+  auto out = std::to_string((*it++)->id());
   while (it != m_touch_points.end()) {
-    stream << " " << std::to_string((*it++)->id());
+    out += " " + std::to_string((*it++)->id());
   }
-  return stream;
+  return out;
 }
 
-std::ostream& Gesture::print(std::ostream& stream) const {
-  stream << "Gesture <";
-  print_touch_points(stream);
-  return stream << ">";
+std::string Gesture::as_string() const {
+  return "<Gesture [" + touch_points_string() + "]>";
 }

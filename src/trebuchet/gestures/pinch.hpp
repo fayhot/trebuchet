@@ -2,8 +2,9 @@
 
 #include <chrono>
 #include <cmath>
-#include <iostream>
+#include <memory>
 #include <set>
+#include <string>
 
 #include <gestures/gesture.hpp>
 #include <vec2.hpp>
@@ -13,7 +14,7 @@ class Pinch : public Gesture {
   Pinch(std::set<std::shared_ptr<TouchPoint>> first_cluster,
         std::set<std::shared_ptr<TouchPoint>> second_cluster);
 
-  std::ostream& print(std::ostream& stream) const override;
+  std::string as_string() const override;
 
   Vec2 first_center() const;
   Vec2 second_center() const;

@@ -2,8 +2,6 @@
 
 LongTap::LongTap(std::shared_ptr<TouchPoint> tp) : Tap(tp) {}
 
-std::ostream& LongTap::print(std::ostream& stream) const {
-  stream << "LongTap <";
-  print_touch_points(stream);
-  return stream << ">";
+std::string LongTap::as_string() const {
+  return "<LongTap [" + touch_points_string() + "]>";
 }

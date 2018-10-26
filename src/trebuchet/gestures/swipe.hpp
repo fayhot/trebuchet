@@ -1,6 +1,7 @@
 #pragma once
 
-#include <iostream>
+#include <memory>
+#include <string>
 
 #include <gestures/gesture.hpp>
 
@@ -10,5 +11,5 @@ class Swipe : public Gesture {
 
   const std::vector<Vec2>& positions() const;
 
-  std::ostream& print(std::ostream& stream) const override;
+  std::string as_string() const override;
 };

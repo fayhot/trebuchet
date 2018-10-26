@@ -13,8 +13,6 @@ double Tap::time_finished() const {
          1000.0;
 }
 
-std::ostream& Tap::print(std::ostream& stream) const {
-  stream << "Tap <";
-  print_touch_points(stream);
-  return stream << ">";
+std::string Tap::as_string() const {
+  return "<Tap [" + touch_points_string() + "]>";
 }

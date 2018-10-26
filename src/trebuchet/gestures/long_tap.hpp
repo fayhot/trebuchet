@@ -1,6 +1,7 @@
 #pragma once
 
-#include <iostream>
+#include <memory>
+#include <string>
 
 #include <gestures/gesture.hpp>
 #include <gestures/tap.hpp>
@@ -9,5 +10,5 @@ class LongTap : public Tap {
  public:
   LongTap(std::shared_ptr<TouchPoint> tp);
 
-  std::ostream& print(std::ostream& stream) const override;
+  std::string as_string() const override;
 };

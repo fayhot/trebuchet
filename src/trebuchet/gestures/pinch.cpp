@@ -22,15 +22,14 @@ Pinch::Pinch(std::set<std::shared_ptr<TouchPoint>> first_cluster,
   }
 }
 
-std::ostream& Pinch::print(std::ostream& stream) const {
+std::string Pinch::as_string() const {
+  std::string direction = "";
   if (m_horizontal) {
-    stream << "Horizontal";
+    direction = "Horizontal";
   } else if (m_vertical) {
-    stream << "Vertical";
+    direction = "Vertical";
   }
-  stream << "Pinch" << m_touch_points.size() / 2 << " <";
-  print_touch_points(stream);
-  return stream << ">";
+  return "<" + direction + "Pinch [" + touch_points_string() + "]>";
 }
 
 Vec2 Pinch::first_center() const {

@@ -20,8 +20,6 @@ Vec2 Fling::direction() const {
   return pos() - m_start_pos;
 }
 
-std::ostream& Fling::print(std::ostream& stream) const {
-  stream << "Fling" << m_touch_points.size() << " <";
-  print_touch_points(stream);
-  return stream << ">";
+std::string Fling::as_string() const {
+  return "<Fling [" + touch_points_string() + "]>";
 }

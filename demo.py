@@ -8,8 +8,7 @@ def main():
     recognizer.start()
     while True:
         for gesture, event in recognizer.update():
-            tp_ids = ", ".join([str(tp.id) for tp in gesture.touch_points])
-            print(event, type(gesture), "<{}>".format(tp_ids))
+            print(event, gesture)
 
 
 if __name__ == '__main__':

@@ -1,6 +1,8 @@
 #pragma once
 
-#include <iostream>
+#include <memory>
+#include <set>
+#include <string>
 
 #include <gestures/gesture.hpp>
 
@@ -14,7 +16,7 @@ class Fling : public Gesture {
   uint32_t num_fingers() const;
   Vec2 direction() const;
 
-  std::ostream& print(std::ostream& stream) const override;
+  std::string as_string() const override;
 
  protected:
   static const uint32_t MAX_FINGERS = 4;

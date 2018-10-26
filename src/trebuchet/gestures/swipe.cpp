@@ -6,8 +6,6 @@ const std::vector<Vec2>& Swipe::positions() const {
   return (*m_touch_points.begin())->positions();
 }
 
-std::ostream& Swipe::print(std::ostream& stream) const {
-  stream << "Swipe <";
-  print_touch_points(stream);
-  return stream << ">";
+std::string Swipe::as_string() const {
+  return "<Swipe " + touch_points_string() + "]>";
 }

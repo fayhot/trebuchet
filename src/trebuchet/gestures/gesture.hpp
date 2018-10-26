@@ -1,7 +1,6 @@
 #pragma once
 
 #include <algorithm>
-#include <iostream>
 #include <chrono>
 #include <utility>
 #include <memory>
@@ -26,8 +25,8 @@ class Gesture {
   virtual double time_finished() const;
   virtual double age() const;
 
-  std::ostream& print_touch_points(std::ostream& stream) const;
-  virtual std::ostream& print(std::ostream& stream) const;
+  std::string touch_points_string() const;
+  virtual std::string as_string() const;
 
  protected:
   Gesture(Gesture&& other) noexcept;

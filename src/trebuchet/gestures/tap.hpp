@@ -1,7 +1,7 @@
 #pragma once
 
-#include <chrono>
-#include <iostream>
+#include <memory>
+#include <string>
 
 #include <gestures/gesture.hpp>
 
@@ -13,5 +13,5 @@ class Tap : public Gesture {
 
   double time_finished() const override;
 
-  std::ostream& print(std::ostream& stream) const override;
+  std::string as_string() const override;
 };

@@ -1,6 +1,7 @@
 #pragma once
 
-#include <iostream>
+#include <memory>
+#include <string>
 
 #include <gestures/gesture.hpp>
 
@@ -9,5 +10,5 @@ class DoubleTap : public Gesture {
   DoubleTap(std::shared_ptr<TouchPoint> first_tp,
             std::shared_ptr<TouchPoint> second_tp);
 
-  std::ostream& print(std::ostream& stream) const override;
+  std::string as_string() const override;
 };
