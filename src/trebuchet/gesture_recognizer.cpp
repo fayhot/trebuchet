@@ -260,10 +260,27 @@ void GestureRecognizer::detect_4finger_pinches() {
       auto tp2 = touch_points[indices[2]];
       auto tp3 = touch_points[indices[3]];
 
-      // check if the angle between the two positions in a cluster have an angle
-      // between them that is too large
-      if (angle(tp0->pos(), tp1->pos()) > PINCH_MAX_ANGLE_DIFF_IN_CLUSTERS ||
-          angle(tp2->pos(), tp3->pos()) > PINCH_MAX_ANGLE_DIFF_IN_CLUSTERS) {
+      // check if the angle of the movement of the touch points in one cluster
+      // is not too large
+      if (angle(tp0->direction(), tp1->direction()) >
+              PINCH_MAX_ANGLE_DIFF_IN_CLUSTERS ||
+          angle(tp2->direction(), tp3->direction()) >
+              PINCH_MAX_ANGLE_DIFF_IN_CLUSTERS) {
+        continue;
+      }
+
+      // compute the average velocity of each cluster
+      auto cluster0_velocity = 0.5 * (tp0->velocity() + tp1->velocity());
+      auto cluster1_velocity = 0.5 * (tp2->velocity() + tp3->velocity());
+
+      // check that the clusters are moving more opposed than touch points in
+      // the same cluster
+      auto between_clusters_velocity_diff =
+          abs(cluster0_velocity - cluster1_velocity).length();
+      if (between_clusters_velocity_diff <
+              abs(tp0->velocity() - tp1->velocity()).length() ||
+          between_clusters_velocity_diff <
+              abs(tp2->velocity() - tp3->velocity()).length()) {
         continue;
       }
 
