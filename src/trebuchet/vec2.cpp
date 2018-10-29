@@ -65,6 +65,12 @@ double Vec2::length() const {
   return std::sqrt(x * x + y * y);
 }
 
+Vec2& Vec2::abs() {
+  x = std::abs(x);
+  y = std::abs(y);
+  return *this;
+}
+
 std::ostream& operator<<(std::ostream& stream, const Vec2& vec) {
   stream << "(" << vec.x << ", " << vec.y << ")";
   return stream;
@@ -122,6 +128,10 @@ Vec2 operator*(double s, const Vec2& vec) {
 
 Vec2 operator/(double s, const Vec2& vec) {
   return Vec2(s / vec.x, s / vec.y);
+}
+
+Vec2 abs(const Vec2& vec) {
+  return Vec2(std::abs(vec.x), std::abs(vec.y));
 }
 
 Vec2 normalize(const Vec2& vec) {

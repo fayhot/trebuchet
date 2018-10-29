@@ -30,6 +30,7 @@ struct Vec2 {
 
   Vec2& normalize();
   double length() const;
+  Vec2& abs();
 
   double x;
   double y;
@@ -54,6 +55,7 @@ Vec2 operator-(double s, const Vec2& vec);
 Vec2 operator*(double s, const Vec2& vec);
 Vec2 operator/(double s, const Vec2& vec);
 
+Vec2 abs(const Vec2& vec);
 Vec2 normalize(const Vec2& vec);
 double distance(const Vec2& lhs, const Vec2& rhs);
 double dot(const Vec2& lhs, const Vec2& rhs);
