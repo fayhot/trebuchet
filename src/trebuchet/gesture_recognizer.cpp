@@ -54,6 +54,7 @@ std::vector<GestureEventPair> GestureRecognizer::update() {
   }
   fire_verified_taps();
   fire_verified_flings();
+  fire_verified_pinches();
   remove_finished_gestures();
   m_tp_mutex.unlock();
 
@@ -107,8 +108,7 @@ void GestureRecognizer::end_bundle(int32_t fseq) {
   detect_taps();
   detect_long_taps();
   detect_double_taps();
-  detect_4finger_pinches();
-  detect_2finger_pinches();
+  detect_pinches();
   detect_flings();
   detect_swipes();
 
@@ -213,8 +213,8 @@ void GestureRecognizer::detect_double_taps() {
   }
 }
 
-void GestureRecognizer::detect_2finger_pinches() {
-  // at least two touch points are required for a tw-finger-pinch
+void GestureRecognizer::detect_pinches() {
+  // at least two touch points are required for a pinch
   if (m_unhandled_tps.size() < 2) {
     return;
   }
@@ -227,84 +227,38 @@ void GestureRecognizer::detect_2finger_pinches() {
       continue;
     }
 
+    // check if the touch pointer pair is a 2-finger-pinch
     if (angle(touch_points[0]->direction(), touch_points[1]->direction()) >=
         PINCH_MIN_ANGLE_BETWEEN_CLUSTERS) {
+      // create the pinch
       auto pinch = std::make_shared<Pinch>(
           std::set<std::shared_ptr<TouchPoint>>{touch_points[0]},
           std::set<std::shared_ptr<TouchPoint>>{touch_points[1]});
-      add_gesture_event(pinch, GestureEvent::START);
       m_unhandled_tps.erase(touch_points[0]);
       m_unhandled_tps.erase(touch_points[1]);
-    }
-  }
-}
 
-void GestureRecognizer::detect_4finger_pinches() {
-  // at least two four points are required for a four-finger-pinch
-  if (m_unhandled_tps.size() < 4) {
-    return;
-  }
-
-  auto unhandled_tps = m_unhandled_tps;
-  for (auto&& touch_points : iter::combinations(unhandled_tps, 4)) {
-    // check if all touch points are still unhandled and have not been detected
-    // as part of a pinch in a previous iteration
-    if (!only_unhandled_tps({touch_points[0], touch_points[1], touch_points[2],
-                             touch_points[3]})) {
-      continue;
-    }
-
-    for (auto indices : PINCH2F_TP_INDICES) {
-      auto tp0 = touch_points[indices[0]];
-      auto tp1 = touch_points[indices[1]];
-      auto tp2 = touch_points[indices[2]];
-      auto tp3 = touch_points[indices[3]];
-
-      // check if the angle of the movement of the touch points in one cluster
-      // is not too large
-      if (angle(tp0->direction(), tp1->direction()) >
-              PINCH_MAX_ANGLE_DIFF_IN_CLUSTERS ||
-          angle(tp2->direction(), tp3->direction()) >
-              PINCH_MAX_ANGLE_DIFF_IN_CLUSTERS) {
-        continue;
+      // check if the detected pinch is part of another already detected pinch
+      bool part_of_other_pinch = false;
+      for (auto& other : m_pinches) {
+        auto ang = angle(pinch->direction(), other->direction());
+        auto first_dist =
+            std::min(distance(pinch->first_center(), other->first_center()),
+                     distance(pinch->first_center(), other->second_center()));
+        auto second_dist =
+            std::min(distance(pinch->second_center(), other->first_center()),
+                     distance(pinch->second_center(), other->second_center()));
+        if ((ang <= PINCH_MULTI_FINGER_MAX_ANGLE_DIFF ||
+             ang >= M_PI - PINCH_MULTI_FINGER_MAX_ANGLE_DIFF) &&
+            first_dist <= PINCH_MULTI_FINGER_MAX_CLUSTER_DISTANCE &&
+            second_dist <= PINCH_MULTI_FINGER_MAX_CLUSTER_DISTANCE) {
+          other->merge(*pinch);
+          part_of_other_pinch = true;
+        }
       }
 
-      // compute the average velocity of each cluster
-      auto cluster0_velocity = 0.5 * (tp0->velocity() + tp1->velocity());
-      auto cluster1_velocity = 0.5 * (tp2->velocity() + tp3->velocity());
-
-      // check that the clusters are moving more opposed than touch points in
-      // the same cluster
-      auto between_clusters_velocity_diff =
-          abs(cluster0_velocity - cluster1_velocity).length();
-      if (between_clusters_velocity_diff <
-              abs(tp0->velocity() - tp1->velocity()).length() ||
-          between_clusters_velocity_diff <
-              abs(tp2->velocity() - tp3->velocity()).length()) {
-        continue;
-      }
-
-      // compute the average direction of each cluster
-      auto cluster0_direction = 0.5 * (tp0->direction() + tp1->direction());
-      auto cluster1_direction = 0.5 * (tp2->direction() + tp3->direction());
-
-      if (angle(cluster0_direction, cluster1_direction) >=
-          PINCH_MIN_ANGLE_BETWEEN_CLUSTERS) {
-        // pinch detected, create the gesture event
-        auto pinch = std::make_shared<Pinch>(
-            std::set<std::shared_ptr<TouchPoint>>{tp0, tp1},
-            std::set<std::shared_ptr<TouchPoint>>{tp2, tp3});
-        add_gesture_event(pinch, GestureEvent::START);
-
-        // remove the used touch points from the unhandled set
-        m_unhandled_tps.erase(tp0);
-        m_unhandled_tps.erase(tp1);
-        m_unhandled_tps.erase(tp2);
-        m_unhandled_tps.erase(tp3);
-
-        // the current four touch points were detected as a 4-finger-pinch and
-        // we don't have to check further combinations of these
-        break;
+      // store the new pinch gesture which is not part of another pinch
+      if (!part_of_other_pinch) {
+        m_pinches.emplace(std::move(pinch));
       }
     }
   }
@@ -362,6 +316,19 @@ void GestureRecognizer::fire_verified_flings() {
     if (fling->duration() > FLING_MULTI_FINGER_MAX_TIME_BETWEEN) {
       add_gesture_event(fling, GestureEvent::START);
       it = m_flings.erase(it);
+    } else {
+      ++it;
+    }
+  }
+}
+
+void GestureRecognizer::fire_verified_pinches() {
+  for (auto it = m_pinches.begin(); it != m_pinches.end();) {
+    auto pinch = *it;
+
+    if (pinch->duration() > PINCH_MULTI_FINGER_MAX_TIME_BETWEEN) {
+      add_gesture_event(pinch, GestureEvent::START);
+      it = m_pinches.erase(it);
     } else {
       ++it;
     }

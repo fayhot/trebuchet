@@ -29,6 +29,8 @@ class Pinch : public Gesture {
   double start_distance() const;
   const Vec2& start_direction() const;
 
+  void merge(const Pinch& other);
+
  protected:
   const double DIRECTION_ANGLE_THRESHOLD = 0.2 * M_PI;
 

@@ -83,3 +83,11 @@ double Pinch::start_distance() const {
 const Vec2& Pinch::start_direction() const {
   return m_start_direction;
 }
+
+void Pinch::merge(const Pinch& other) {
+  m_start_center = 0.5 * (m_start_center + other.m_start_center);
+  m_start_distance = 0.5 * (m_start_distance + other.m_start_distance);
+  m_start_direction = 0.5 * (m_start_direction + other.m_start_direction);
+  m_touch_points.insert(other.m_touch_points.begin(),
+                        other.m_touch_points.end());
+}
