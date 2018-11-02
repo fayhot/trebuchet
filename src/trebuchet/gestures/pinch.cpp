@@ -1,24 +1,48 @@
 #include <gestures/pinch.hpp>
 
-Pinch::Pinch(std::set<std::shared_ptr<TouchPoint>> first_cluster,
-             std::set<std::shared_ptr<TouchPoint>> second_cluster)
+Pinch::Pinch(const std::set<TouchPointPtr>& first_cluster,
+             const std::set<TouchPointPtr>& second_cluster)
     : m_first_cluster(first_cluster), m_second_cluster(second_cluster) {
-  m_touch_points.insert(first_cluster.begin(), first_cluster.end());
-  m_touch_points.insert(second_cluster.begin(), second_cluster.end());
+  // add all tocuh points to the gesture's set
+  for (auto& tp : m_first_cluster) {
+    m_touch_points.insert(tp);
+  }
+  for (auto& tp : m_second_cluster) {
+    m_touch_points.insert(tp);
+  }
 
-  m_start_center = center();
-  m_start_distance = distance();
-  m_start_direction = direction();
+  // compute the start center of all touch points
+  std::vector<Vec2> start_positions;
+  std::transform(m_touch_points.begin(), m_touch_points.end(),
+                 std::back_inserter(start_positions),
+                 [](auto& tp) { return tp->start_pos(); });
+  m_start_center = ::centroid(start_positions);
 
-  m_horizontal =
-      (::angle(m_start_direction, Vec2(1.0, 0.0)) <
-       DIRECTION_ANGLE_THRESHOLD) ||
-      (::angle(m_start_direction, Vec2(-1.0, 0.0)) < DIRECTION_ANGLE_THRESHOLD);
-  if (!m_horizontal) {
-    m_vertical = (::angle(m_start_direction, Vec2(0.0, 1.0)) <
-                  DIRECTION_ANGLE_THRESHOLD) ||
-                 (::angle(m_start_direction, Vec2(0.0, -1.0)) <
-                  DIRECTION_ANGLE_THRESHOLD);
+  // compute the cluster centers
+  std::vector<Vec2> first_cluster_pos;
+  std::transform(m_first_cluster.begin(), m_first_cluster.end(),
+                 std::back_inserter(first_cluster_pos),
+                 [](auto& tp) { return tp->start_pos(); });
+  auto first_center = centroid(first_cluster_pos);
+  std::vector<Vec2> second_cluster_pos;
+  std::transform(m_second_cluster.begin(), m_second_cluster.end(),
+                 std::back_inserter(second_cluster_pos),
+                 [](auto& tp) { return tp->start_pos(); });
+  auto second_center = centroid(second_cluster_pos);
+
+  // compute the distance between the clusters
+  m_start_distance = ::distance(first_center, second_center);
+
+  // compute the pinch's orientation
+  auto direction = second_center - first_center;
+  if (std::min(::angle(direction, Vec2(1.0, 0.0)),
+               ::angle(direction, Vec2(-1.0, 0.0))) <=
+      DIRECTION_ANGLE_THRESHOLD) {
+    m_horizontal = true;
+  } else if (std::min(::angle(direction, Vec2(0.0, 1.0)),
+                      ::angle(direction, Vec2(0.0, -1.0))) <=
+             DIRECTION_ANGLE_THRESHOLD) {
+    m_vertical = true;
   }
 }
 
@@ -37,7 +61,7 @@ Vec2 Pinch::first_center() const {
   std::transform(m_first_cluster.begin(), m_first_cluster.end(),
                  std::back_inserter(positions),
                  [](auto& tp) { return tp->pos(); });
-  return centroid(positions);
+  return ::centroid(positions);
 }
 
 Vec2 Pinch::second_center() const {
@@ -45,19 +69,15 @@ Vec2 Pinch::second_center() const {
   std::transform(m_second_cluster.begin(), m_second_cluster.end(),
                  std::back_inserter(positions),
                  [](auto& tp) { return tp->pos(); });
-  return centroid(positions);
+  return ::centroid(positions);
 }
 
 Vec2 Pinch::center() const {
-  return centroid({first_center(), second_center()});
+  return ::centroid({first_center(), second_center()});
 }
 
 double Pinch::distance() const {
   return ::distance(first_center(), second_center());
-}
-
-Vec2 Pinch::direction() const {
-  return second_center() - first_center();
 }
 
 bool Pinch::horizontal() const {
@@ -69,7 +89,7 @@ bool Pinch::vertical() const {
 }
 
 uint32_t Pinch::num_fingers() const {
-  return m_touch_points.size() / 2;
+  return m_first_cluster.size();
 }
 
 const Vec2& Pinch::start_center() const {
@@ -78,16 +98,4 @@ const Vec2& Pinch::start_center() const {
 
 double Pinch::start_distance() const {
   return m_start_distance;
-}
-
-const Vec2& Pinch::start_direction() const {
-  return m_start_direction;
-}
-
-void Pinch::merge(const Pinch& other) {
-  m_start_center = 0.5 * (m_start_center + other.m_start_center);
-  m_start_distance = 0.5 * (m_start_distance + other.m_start_distance);
-  m_start_direction = 0.5 * (m_start_direction + other.m_start_direction);
-  m_touch_points.insert(other.m_touch_points.begin(),
-                        other.m_touch_points.end());
 }

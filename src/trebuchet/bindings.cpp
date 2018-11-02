@@ -79,19 +79,13 @@ PYBIND11_MODULE(trebuchet, m) {
           "center",
           [](const Pinch& pinch) { return vec_to_tuple(pinch.center()); })
       .def_property_readonly("distance", &Pinch::distance)
-      .def_property_readonly(
-          "direction",
-          [](const Pinch& pinch) { return vec_to_tuple(pinch.direction()); })
       .def_property_readonly("horizontal", &Pinch::horizontal)
       .def_property_readonly("vertical", &Pinch::vertical)
       .def_property_readonly("num_fingers", &Pinch::num_fingers)
       .def_property_readonly(
           "start_center",
           [](const Pinch& pinch) { return vec_to_tuple(pinch.start_center()); })
-      .def_property_readonly("start_distance", &Pinch::start_distance)
-      .def_property_readonly("start_direction", [](const Pinch& pinch) {
-        return vec_to_tuple(pinch.start_direction());
-      });
+      .def_property_readonly("start_distance", &Pinch::start_distance);
 
   py::class_<Fling, std::shared_ptr<Fling>, Gesture>(m, "Fling")
       .def_property_readonly(
