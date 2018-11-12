@@ -354,11 +354,6 @@ void GestureRecognizer::fire_verified_taps() {
   for (auto it = m_possible_taps.begin(); it != m_possible_taps.end();) {
     auto tap = *it;
     auto time_since_finished = now - tap->end_time();
-    // std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(
-    //                  time_since_finished)
-    //                      .count() /
-    //                  1000.0
-    //           << " " << tap->finished() << std::endl;
     if (time_since_finished > DOUBLE_TAP_MAX_PAUSE) {
       add_gesture_event(tap, GestureEvent::TRIGGER);
       it = m_possible_taps.erase(it);
