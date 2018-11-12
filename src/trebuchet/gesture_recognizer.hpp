@@ -26,6 +26,7 @@
 #include <vec2.hpp>
 
 using GestureEventPair = std::pair<std::shared_ptr<Gesture>, GestureEvent>;
+using TouchPointPtr = std::shared_ptr<TouchPoint>;
 
 class GestureRecognizer {
  public:
@@ -54,6 +55,8 @@ class GestureRecognizer {
   void detect_taps();
   void detect_long_taps();
   void detect_double_taps();
+  std::shared_ptr<Pinch> is_4finger_pinch(
+      const std::set<TouchPointPtr>& touch_points);
   void detect_pinches();
   void detect_swipes();
 
@@ -79,11 +82,10 @@ class GestureRecognizer {
   const double DOUBLE_TAP_MAX_DISTANCE{0.02};  // in m
   const std::chrono::milliseconds DOUBLE_TAP_MAX_PAUSE{200};
 
-  const double PINCH_MIN_ANGLE_BETWEEN_CLUSTERS{0.8 * M_PI};   // in rad
-  const double PINCH_MAX_ANGLE_DIFF_IN_CLUSTERS{0.25 * M_PI};  // in rad
-  const double PINCH_MULTI_FINGER_MAX_ANGLE_DIFF{0.4 * M_PI};  // in rad
-  const double PINCH_MULTI_FINGER_MAX_CLUSTER_DISTANCE{0.2};   // in m
-  const std::chrono::milliseconds PINCH_MULTI_FINGER_MAX_TIME_BETWEEN{100};
+  const std::array<std::array<std::size_t, 4>, 3> PINCH_INDICES{
+      {{0, 1, 2, 3}, {0, 2, 1, 3}, {0, 3, 1, 2}}};
+  const double PINCH_MIN_OPPOSING_ANGLE{0.9 * M_PI};  // in rad
+  const std::chrono::milliseconds PINCH_MULTI_FINGER_MAX_TIME_BETWEEN{200};
 
   const int32_t FLING_MAX_NUM_FINGERS{3};
   const std::chrono::milliseconds FLING_MULTI_FINGER_MAX_TIME_BETWEEN{400};
@@ -93,11 +95,6 @@ class GestureRecognizer {
 
   const double SWIPE_MIN_TRAVEL{0.04};  // in m
   const std::chrono::milliseconds SWIPE_MIN_DURATION{400};
-
-  const std::vector<std::array<std::size_t, 4>> PINCH2F_TP_INDICES = {
-      {0, 1, 2, 3},
-      {0, 2, 1, 3},
-      {1, 2, 0, 3}};
 
  private:
   std::unique_ptr<lo::ServerThread> m_liblo_st;
@@ -112,7 +109,7 @@ class GestureRecognizer {
 
   std::set<std::shared_ptr<TouchPoint>> m_unhandled_tps;
   std::set<std::shared_ptr<Tap>> m_possible_taps;
-  std::set<std::shared_ptr<Pinch>> m_pinches;
+  std::set<std::shared_ptr<Pinch>> m_possible_pinches;
   std::set<std::shared_ptr<Fling>> m_flings;
   std::set<std::shared_ptr<Gesture>> m_active_gestures;
 

@@ -213,54 +213,112 @@ void GestureRecognizer::detect_double_taps() {
   }
 }
 
+std::shared_ptr<Pinch> GestureRecognizer::is_4finger_pinch(
+    const std::set<TouchPointPtr>& touch_points) {
+  if (touch_points.size() != 4) {
+    return nullptr;
+  }
+
+  std::vector<TouchPointPtr> tps(touch_points.begin(), touch_points.end());
+
+  std::multimap<double, std::set<std::pair<TouchPointPtr, TouchPointPtr>>>
+      angles;
+  for (auto indices : PINCH_INDICES) {
+    auto& tp0 = tps[indices[0]];
+    auto& tp1 = tps[indices[1]];
+    auto& tp2 = tps[indices[2]];
+    auto& tp3 = tps[indices[3]];
+
+    auto first_angle = angle(tp0->direction(), tp1->direction());
+    auto second_angle = angle(tp2->direction(), tp3->direction());
+
+    std::set<std::pair<TouchPointPtr, TouchPointPtr>> tp_pairs{
+        {std::make_pair(tp0, tp1), std::make_pair(tp2, tp3)}};
+
+    if (first_angle >= PINCH_MIN_OPPOSING_ANGLE &&
+        second_angle >= PINCH_MIN_OPPOSING_ANGLE) {
+      auto first_error = first_angle - M_PI;
+      auto second_error = second_angle - M_PI;
+      auto mse =
+          0.5 * first_error * first_error + 0.5 * second_error * second_error;
+      angles.insert(std::make_pair(mse, tp_pairs));
+    }
+  }
+
+  if (!angles.empty()) {
+    auto& tps = angles.begin()->second;
+    return std::make_shared<Pinch>(tps);
+  }
+
+  return nullptr;
+}
+
 void GestureRecognizer::detect_pinches() {
   // at least two touch points are required for a pinch
   if (m_unhandled_tps.size() < 2) {
     return;
   }
 
-  auto unhandled_tps = m_unhandled_tps;
-  for (auto&& touch_points : iter::combinations(unhandled_tps, 2)) {
-    // check if all touch points are still unhandled and have not been detected
-    // as part of a pinch in a previous iteration
-    if (!only_unhandled_tps({touch_points[0], touch_points[1]})) {
+  // check for 4-finger-pinches
+  for (auto&& tps : iter::combinations(m_unhandled_tps, 4)) {
+    auto touch_points = std::set<TouchPointPtr>{tps[0], tps[1], tps[2], tps[3]};
+    if (!only_unhandled_tps(touch_points)) {
+      continue;
+    }
+    if (auto pinch = is_4finger_pinch(touch_points)) {
+      for (auto& tp : pinch->touch_points()) {
+        m_unhandled_tps.erase(tp);
+      }
+      add_gesture_event(pinch, GestureEvent::START);
+    }
+  }
+
+  // check for 2-finger-pinches
+  std::set<std::pair<TouchPointPtr, TouchPointPtr>> pinch2f_tps;
+  for (auto&& tps : iter::combinations(m_unhandled_tps, 2)) {
+    auto touch_points = std::set<TouchPointPtr>{tps[0], tps[1]};
+    if (!only_unhandled_tps(touch_points)) {
       continue;
     }
 
-    // check if the touch pointer pair is a 2-finger-pinch
-    if (angle(touch_points[0]->direction(), touch_points[1]->direction()) >=
-        PINCH_MIN_ANGLE_BETWEEN_CLUSTERS) {
-      // create the pinch
-      auto pinch = std::make_shared<Pinch>(
-          std::set<std::shared_ptr<TouchPoint>>{touch_points[0]},
-          std::set<std::shared_ptr<TouchPoint>>{touch_points[1]});
-      m_unhandled_tps.erase(touch_points[0]);
-      m_unhandled_tps.erase(touch_points[1]);
+    if (angle(tps[0]->velocity(), tps[1]->velocity()) >=
+        PINCH_MIN_OPPOSING_ANGLE) {
+      pinch2f_tps.emplace(std::make_pair(tps[0], tps[1]));
+    }
+  }
 
-      // check if the detected pinch is part of another already detected pinch
-      bool part_of_other_pinch = false;
-      for (auto& other : m_pinches) {
-        auto ang = angle(pinch->direction(), other->direction());
-        auto first_dist =
-            std::min(distance(pinch->first_center(), other->first_center()),
-                     distance(pinch->first_center(), other->second_center()));
-        auto second_dist =
-            std::min(distance(pinch->second_center(), other->first_center()),
-                     distance(pinch->second_center(), other->second_center()));
-        if ((ang <= PINCH_MULTI_FINGER_MAX_ANGLE_DIFF ||
-             ang >= M_PI - PINCH_MULTI_FINGER_MAX_ANGLE_DIFF) &&
-            first_dist <= PINCH_MULTI_FINGER_MAX_CLUSTER_DISTANCE &&
-            second_dist <= PINCH_MULTI_FINGER_MAX_CLUSTER_DISTANCE) {
-          other->merge(*pinch);
-          part_of_other_pinch = true;
-        }
-      }
-
-      // store the new pinch gesture which is not part of another pinch
-      if (!part_of_other_pinch) {
-        m_pinches.emplace(std::move(pinch));
+  // check if one of the newly detected 2-finger pinches and an older one form a
+  // 4-finger-pinch
+  for (auto pinch_it = m_possible_pinches.begin();
+       pinch_it != m_possible_pinches.end();) {
+    bool merged = false;
+    for (auto it = pinch2f_tps.begin(); it != pinch2f_tps.end();) {
+      std::set<TouchPointPtr> touch_points = (*pinch_it)->touch_points();
+      touch_points.insert(it->first);
+      touch_points.insert(it->second);
+      if (auto pinch = is_4finger_pinch(touch_points)) {
+        m_unhandled_tps.erase(it->first);
+        m_unhandled_tps.erase(it->second);
+        it = pinch2f_tps.erase(it);
+        pinch_it = m_possible_pinches.erase(pinch_it);
+        add_gesture_event(pinch, GestureEvent::START);
+        merged = true;
+        break;
+      } else {
+        ++it;
       }
     }
+    if (!merged) {
+      ++pinch_it;
+    }
+  }
+
+  // add the remaining 2-finger-pinches to the set of possible pinches
+  for (auto& tp_pair : pinch2f_tps) {
+    m_possible_pinches.emplace(std::make_shared<Pinch>(
+        std::set<std::pair<TouchPointPtr, TouchPointPtr>>{tp_pair}));
+    m_unhandled_tps.erase(tp_pair.first);
+    m_unhandled_tps.erase(tp_pair.second);
   }
 }
 
@@ -323,12 +381,12 @@ void GestureRecognizer::fire_verified_flings() {
 }
 
 void GestureRecognizer::fire_verified_pinches() {
-  for (auto it = m_pinches.begin(); it != m_pinches.end();) {
+  for (auto it = m_possible_pinches.begin(); it != m_possible_pinches.end();) {
     auto pinch = *it;
 
     if (pinch->duration() > PINCH_MULTI_FINGER_MAX_TIME_BETWEEN) {
       add_gesture_event(pinch, GestureEvent::START);
-      it = m_pinches.erase(it);
+      it = m_possible_pinches.erase(it);
     } else {
       ++it;
     }
