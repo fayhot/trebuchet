@@ -93,8 +93,8 @@ class GestureRecognizer {
   const double FLING_MAX_ANGLE_DIFF{0.1 * M_PI};  // in rad
   const double FLING_MAX_DISTANCE{0.1};           // in m
 
-  const double SWIPE_MIN_TRAVEL{0.04};  // in m
-  const std::chrono::milliseconds SWIPE_MIN_DURATION{400};
+  const double SWIPE_MIN_TRAVEL{0.01};   // in m
+  const double SWIPE_MAX_VELOCITY{0.3};  // in m/s
 
  private:
   std::unique_ptr<lo::ServerThread> m_liblo_st;
