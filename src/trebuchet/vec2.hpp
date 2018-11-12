@@ -62,6 +62,8 @@ double dot(const Vec2& lhs, const Vec2& rhs);
 double cross(const Vec2& lhs, const Vec2& rhs);
 double angle(const Vec2& lhs, const Vec2& rhs);
 double angle_deg(const Vec2& lhs, const Vec2& rhs);
+double angle_horizontal(const Vec2& vec);
+double angle_vertical(const Vec2& vec);
 Vec2 flip_x(const Vec2& vec);
 Vec2 flip_y(const Vec2& vec);
 Vec2 flip(const Vec2& vec);

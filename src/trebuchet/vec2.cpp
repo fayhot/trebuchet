@@ -158,6 +158,14 @@ double angle_deg(const Vec2& lhs, const Vec2& rhs) {
   return angle(lhs, rhs) * 180.0 / M_PI;
 }
 
+double angle_horizontal(const Vec2& vec) {
+  return std::min(angle(vec, Vec2(1.0, 0.0)), angle(vec, Vec2(-1.0, 0.0)));
+}
+
+double angle_vertical(const Vec2& vec) {
+  return std::min(angle(vec, Vec2(0.0, 1.0)), angle(vec, Vec2(0.0, -1.0)));
+}
+
 Vec2 flip_x(const Vec2& vec) {
   return Vec2(-vec.x, vec.y);
 }
