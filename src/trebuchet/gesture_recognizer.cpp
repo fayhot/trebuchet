@@ -326,7 +326,8 @@ void GestureRecognizer::detect_swipes() {
   for (auto it = m_unhandled_tps.begin(); it != m_unhandled_tps.end();) {
     auto tp = *it;
     auto travel = (tp->travel() * m_screen_size).length();  // in m
-    if (travel > SWIPE_MIN_TRAVEL && tp->duration() > SWIPE_MIN_DURATION) {
+    if (travel > SWIPE_MIN_TRAVEL &&
+        tuio_to_meters(tp->max_velocity()).length() <= SWIPE_MAX_VELOCITY) {
       add_gesture_event(std::make_shared<Swipe>(tp), GestureEvent::START);
       it = m_unhandled_tps.erase(it);
     } else {
