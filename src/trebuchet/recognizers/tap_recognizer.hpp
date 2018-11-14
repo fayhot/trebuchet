@@ -15,11 +15,11 @@ using GestureEventPair = std::pair<GesturePtr, GestureEvent>;
 class TapRecognizer : public Recognizer {
  public:
   TapRecognizer(const Vec2& screen_resolution, const Vec2& screen_size);
-  std::set<GestureEventPair> update(
-      const std::set<TouchPointPtr>& touch_points) override;
+  bool recognize(const std::set<TouchPointPtr>& touch_points) override;
+  std::set<GestureEventPair> update() override;
+  bool invalidate_touch_point(const TouchPointPtr& touch_point) override;
 
  protected:
-  bool check_for_taps(const std::set<TouchPointPtr>& touch_points);
   std::set<GestureEventPair> verified_double_taps();
   std::set<GestureEventPair> verified_taps();
 

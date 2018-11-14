@@ -4,22 +4,7 @@ TapRecognizer::TapRecognizer(const Vec2& screen_resolution,
                              const Vec2& screen_size)
     : Recognizer(screen_resolution, screen_size) {}
 
-std::set<GestureEventPair> TapRecognizer::update(
-    const std::set<TouchPointPtr>& touch_points) {
-  // detect taps
-  check_for_taps(touch_points);
-
-  // create tap events
-  auto double_taps = verified_double_taps();
-  auto taps = verified_taps();
-
-  // return all events as one set
-  taps.merge(double_taps);
-  return taps;
-}
-
-bool TapRecognizer::check_for_taps(
-    const std::set<TouchPointPtr>& touch_points) {
+bool TapRecognizer::recognize(const std::set<TouchPointPtr>& touch_points) {
   std::set<TapPtr> taps;
   std::vector<TouchPointPtr> tps;
   std::set_difference(touch_points.begin(), touch_points.end(),
@@ -37,6 +22,33 @@ bool TapRecognizer::check_for_taps(
 
   m_taps.insert(taps.begin(), taps.end());
   return !taps.empty();
+}
+
+std::set<GestureEventPair> TapRecognizer::update() {
+  // create tap events
+  auto double_taps = verified_double_taps();
+  auto taps = verified_taps();
+
+  // return all events as one set
+  taps.merge(double_taps);
+  return taps;
+}
+
+bool TapRecognizer::invalidate_touch_point(const TouchPointPtr& touch_point) {
+  bool was_tp_used = false;
+
+  for (auto it = m_taps.begin(); it != m_taps.end();) {
+    auto tap = *it;
+    auto tps = tap->touch_points();
+    if (tps.find(touch_point) != tps.end()) {
+      was_tp_used = true;
+      it = m_taps.erase(it);
+    } else {
+      ++it;
+    }
+  }
+
+  return was_tp_used;
 }
 
 std::set<GestureEventPair> TapRecognizer::verified_double_taps() {

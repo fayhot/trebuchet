@@ -12,8 +12,8 @@ using GestureEventPair = std::pair<GesturePtr, GestureEvent>;
 class SwipeRecognizer : public Recognizer {
  public:
   SwipeRecognizer(const Vec2& screen_resolution, const Vec2& screen_size);
-  std::set<GestureEventPair> update(
-      const std::set<TouchPointPtr>& touch_points) override;
+  bool recognize(const std::set<TouchPointPtr>& touch_points) override;
+  std::set<GestureEventPair> update() override;
   bool invalidate_touch_point(const TouchPointPtr& touch_point) override;
 
  protected:
@@ -21,6 +21,7 @@ class SwipeRecognizer : public Recognizer {
   std::set<GestureEventPair> verified_swipes();
 
  protected:
+  const std::chrono::milliseconds MIN_DURATION{500};
   const double MIN_TRAVEL{0.01};   // in m
   const double MAX_VELOCITY{0.3};  // in m/s
 

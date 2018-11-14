@@ -76,7 +76,7 @@ std::vector<GestureEventPair> Application::update() {
   }
 
   for (auto& recognizer : m_recognizers) {
-    for (auto & [ gesture, event ] : recognizer->update(m_unhandled_tps)) {
+    for (auto & [ gesture, event ] : recognizer->update()) {
       if (event == GestureEvent::START || event == GestureEvent::TRIGGER) {
         for (auto& tp : gesture->touch_points()) {
           for (auto& other_recognizer : m_recognizers) {
@@ -141,7 +141,13 @@ void Application::set_cursor(int32_t id,
 void Application::end_bundle(int32_t fseq) {
   m_tp_mutex.lock();
   m_gestures_mutex.lock();
+
+  for (auto& recognizer : m_recognizers) {
+    recognizer->recognize(m_unhandled_tps);
+  }
+
   cleanup_inactive_touch_points();
+
   m_gestures_mutex.unlock();
   m_tp_mutex.unlock();
 }

@@ -4,31 +4,8 @@ FlingRecognizer::FlingRecognizer(const Vec2& screen_resolution,
                                  const Vec2& screen_size)
     : Recognizer(screen_resolution, screen_size) {}
 
-std::set<GestureEventPair> FlingRecognizer::update(
-    const std::set<TouchPointPtr>& touch_points) {
-  detect_flings(touch_points);
-  return verified_flings();
-}
-
-bool FlingRecognizer::invalidate_touch_point(const TouchPointPtr& touch_point) {
-  bool was_tp_used = false;
-
-  for (auto it = m_flings.begin(); it != m_flings.end();) {
-    auto fling = *it;
-    auto tps = fling->touch_points();
-    if (tps.find(touch_point) != tps.end()) {
-      was_tp_used = true;
-      it = m_flings.erase(it);
-    } else {
-      ++it;
-    }
-  }
-
-  return was_tp_used;
-}
-
-void FlingRecognizer::detect_flings(
-    const std::set<TouchPointPtr>& touch_points) {
+bool FlingRecognizer::recognize(const std::set<TouchPointPtr>& touch_points) {
+  std::set<FlingPtr> flings;
   for (auto& tp : touch_points) {
     // check if the conditions of a fling are met
     if (tuio_to_meters(tp->velocity()).length() >= MIN_VELOCITY) {
@@ -48,13 +25,17 @@ void FlingRecognizer::detect_flings(
       // create a new fling gesture if this touch point was not part of
       // another fling
       if (!part_of_other_fling) {
-        m_flings.emplace(std::make_shared<Fling>(tp));
+        flings.emplace(std::make_shared<Fling>(tp));
       }
     }
   }
+
+  m_flings.insert(flings.begin(), flings.end());
+
+  return !flings.empty();
 }
 
-std::set<GestureEventPair> FlingRecognizer::verified_flings() {
+std::set<GestureEventPair> FlingRecognizer::update() {
   std::set<GestureEventPair> events;
 
   for (auto it = m_flings.begin(); it != m_flings.end();) {
@@ -68,4 +49,21 @@ std::set<GestureEventPair> FlingRecognizer::verified_flings() {
   }
 
   return events;
+}
+
+bool FlingRecognizer::invalidate_touch_point(const TouchPointPtr& touch_point) {
+  bool was_tp_used = false;
+
+  for (auto it = m_flings.begin(); it != m_flings.end();) {
+    auto fling = *it;
+    auto tps = fling->touch_points();
+    if (tps.find(touch_point) != tps.end()) {
+      was_tp_used = true;
+      it = m_flings.erase(it);
+    } else {
+      ++it;
+    }
+  }
+
+  return was_tp_used;
 }

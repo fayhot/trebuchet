@@ -12,8 +12,8 @@ using GestureEventPair = std::pair<GesturePtr, GestureEvent>;
 class LongTapRecognizer : public Recognizer {
  public:
   LongTapRecognizer(const Vec2& screen_resolution, const Vec2& screen_size);
-  std::set<GestureEventPair> update(
-      const std::set<TouchPointPtr>& touch_points) override;
+  bool recognize(const std::set<TouchPointPtr>& touch_points) override;
+  std::set<GestureEventPair> update() override;
 
  protected:
   std::set<LongTapPtr> check_for_long_taps(
@@ -24,4 +24,7 @@ class LongTapRecognizer : public Recognizer {
  protected:
   const std::chrono::milliseconds MIN_DURATION{500};
   const double MAX_DISTANCE{0.01};  // in m
+
+ protected:
+  std::set<LongTapPtr> m_long_taps;
 };
