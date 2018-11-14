@@ -2,7 +2,15 @@
 #include <pybind11/chrono.h>
 #include <pybind11/stl.h>
 
-#include <gesture_recognizer.hpp>
+#include <application.hpp>
+#include <gestures/gesture.hpp>
+#include <gestures/gesture_event.hpp>
+#include <gestures/tap.hpp>
+#include <gestures/double_tap.hpp>
+#include <gestures/long_tap.hpp>
+#include <gestures/fling.hpp>
+#include <gestures/pinch.hpp>
+#include <gestures/swipe.hpp>
 #include <vec2.hpp>
 
 namespace py = pybind11;
@@ -105,26 +113,23 @@ PYBIND11_MODULE(trebuchet, m) {
         return pos_tuples;
       });
 
-  py::class_<GestureRecognizer>(m, "GestureRecognizer")
+  py::class_<Application>(m, "Application")
       .def(py::init<>())
-      .def_property("screen_resolution",
-                    [](GestureRecognizer& recognizer) {
-                      return vec_to_tuple(recognizer.get_screen_resolution());
-                    },
-                    [](GestureRecognizer& recognizer,
-                       const std::tuple<double, double>& resolution) {
-                      recognizer.set_screen_resolution(Vec2(
-                          std::get<0>(resolution), std::get<1>(resolution)));
-                    })
-      .def_property("screen_size",
-                    [](GestureRecognizer& recognizer) {
-                      return vec_to_tuple(recognizer.get_screen_size());
-                    },
-                    [](GestureRecognizer& recognizer,
-                       const std::tuple<double, double>& size) {
-                      recognizer.set_screen_size(
-                          Vec2(std::get<0>(size), std::get<1>(size)));
-                    })
-      .def("update", &GestureRecognizer::update)
-      .def("start", &GestureRecognizer::start);
+      .def_property(
+          "screen_resolution",
+          [](Application& app) {
+            return vec_to_tuple(app.get_screen_resolution());
+          },
+          [](Application& app, const std::tuple<double, double>& resolution) {
+            app.set_screen_resolution(
+                Vec2(std::get<0>(resolution), std::get<1>(resolution)));
+          })
+      .def_property(
+          "screen_size",
+          [](Application& app) { return vec_to_tuple(app.get_screen_size()); },
+          [](Application& app, const std::tuple<double, double>& size) {
+            app.set_screen_size(Vec2(std::get<0>(size), std::get<1>(size)));
+          })
+      .def("update", &Application::update)
+      .def("start", &Application::start);
 }

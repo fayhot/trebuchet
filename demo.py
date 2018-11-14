@@ -4,10 +4,11 @@ import trebuchet
 
 
 def main():
-    recognizer = trebuchet.GestureRecognizer()
-    recognizer.start()
+    app = trebuchet.Application()
+    app.screen_resolution = (3840, 2160)
+    app.start()
     while True:
-        for gesture, event in recognizer.update():
+        for gesture, event in app.update():
             print(event, gesture)
 
 

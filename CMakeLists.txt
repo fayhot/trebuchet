@@ -14,9 +14,9 @@ set(SOURCE_DIR "src/trebuchet")
 include_directories(external)
 include_directories(${SOURCE_DIR})
 set(TREBUCHET_SOURCES
-  "${SOURCE_DIR}/vec2.cpp"
-  "${SOURCE_DIR}/gesture_recognizer.cpp"
+  "${SOURCE_DIR}/application.cpp"
   "${SOURCE_DIR}/touch_point.cpp"
+  "${SOURCE_DIR}/vec2.cpp"
 
   "${SOURCE_DIR}/gestures/gesture.cpp"
   "${SOURCE_DIR}/gestures/gesture_event.cpp"
@@ -26,6 +26,13 @@ set(TREBUCHET_SOURCES
   "${SOURCE_DIR}/gestures/pinch.cpp"
   "${SOURCE_DIR}/gestures/fling.cpp"
   "${SOURCE_DIR}/gestures/swipe.cpp"
+
+  "${SOURCE_DIR}/recognizers/recognizer.cpp"
+  "${SOURCE_DIR}/recognizers/tap_recognizer.cpp"
+  "${SOURCE_DIR}/recognizers/long_tap_recognizer.cpp"
+  "${SOURCE_DIR}/recognizers/fling_recognizer.cpp"
+  "${SOURCE_DIR}/recognizers/pinch_recognizer.cpp"
+  "${SOURCE_DIR}/recognizers/swipe_recognizer.cpp"
 )
 add_subdirectory(external/pybind11)
 pybind11_add_module(trebuchet

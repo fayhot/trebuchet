@@ -18,7 +18,4 @@ class Fling : public Gesture {
   double speed() const;
 
   std::string as_string() const override;
-
- protected:
-  static const uint32_t MAX_FINGERS = 4;
 };
