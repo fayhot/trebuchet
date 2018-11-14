@@ -115,6 +115,14 @@ PYBIND11_MODULE(trebuchet, m) {
 
   py::class_<Application>(m, "Application")
       .def(py::init<>())
+      .def(py::init([](std::tuple<uint32_t, uint32_t> screen_resolution,
+                       std::tuple<double, double> screen_size,
+                       uint32_t port = 3333) {
+        return std::make_unique<Application>(
+            Vec2(std::get<0>(screen_resolution),
+                 std::get<1>(screen_resolution)),
+            Vec2(std::get<0>(screen_size), std::get<1>(screen_size)), port);
+      }))
       .def_property(
           "screen_resolution",
           [](Application& app) {

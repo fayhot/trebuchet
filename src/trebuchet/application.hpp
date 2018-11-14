@@ -31,6 +31,9 @@ using TouchPointPtr = std::shared_ptr<TouchPoint>;
 class Application {
  public:
   Application(uint32_t port = 3333);
+  Application(const Vec2& screen_resolution,
+              const Vec2& screen_size,
+              uint32_t port = 3333);
   Application(const Application&) = delete;
   ~Application() = default;
 

@@ -2,7 +2,14 @@
 
 Application::Application(uint32_t port)
     : m_screen_resolution(1920.0, 1080.0),
-      m_screen_size(0.597, 0.336),
+      m_screen_size(0.698, 0.392),
+      m_liblo_st(std::make_unique<lo::ServerThread>(port)) {}
+
+Application::Application(const Vec2& screen_resolution,
+                         const Vec2& screen_size,
+                         uint32_t port)
+    : m_screen_resolution(screen_resolution),
+      m_screen_size(screen_size),
       m_liblo_st(std::make_unique<lo::ServerThread>(port)) {}
 
 void Application::set_screen_resolution(const Vec2& screen_resolution) {
