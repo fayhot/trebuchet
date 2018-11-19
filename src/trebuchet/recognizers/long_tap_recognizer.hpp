@@ -14,6 +14,7 @@ class LongTapRecognizer : public Recognizer {
   LongTapRecognizer(const Vec2& screen_resolution, const Vec2& screen_size);
   bool recognize(const std::set<TouchPointPtr>& touch_points) override;
   std::set<GestureEventPair> update() override;
+  bool invalidate_touch_point(const TouchPointPtr& touch_point) override;
 
  protected:
   std::set<LongTapPtr> check_for_long_taps(
