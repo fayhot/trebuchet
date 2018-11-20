@@ -23,7 +23,7 @@ class LongTapRecognizer : public Recognizer {
   std::set<GestureEventPair> verified_taps();
 
  protected:
-  const std::chrono::milliseconds MIN_DURATION{500};
+  const std::chrono::milliseconds MIN_DURATION{750};
   const double MAX_DISTANCE{0.01};  // in m
 
  protected:
