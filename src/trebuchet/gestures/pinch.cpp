@@ -19,39 +19,40 @@ Pinch::Pinch(
   auto first_cluster = this->first_cluster();
   auto second_cluster = this->second_cluster();
 
-  // compute the cluster centers
-  std::vector<Vec2> first_cluster_pos;
+  // compute and store the clusters' start positions
+  std::vector<Vec2> first_cluster_start_pos;
   std::transform(first_cluster.begin(), first_cluster.end(),
-                 std::back_inserter(first_cluster_pos),
+                 std::back_inserter(first_cluster_start_pos),
                  [](auto& tp) { return tp->start_pos(); });
-  auto first_center = centroid(first_cluster_pos);
-  std::vector<Vec2> second_cluster_pos;
+  m_first_start_pos = centroid(first_cluster_start_pos);
+  std::vector<Vec2> second_cluster_start_pos;
   std::transform(second_cluster.begin(), second_cluster.end(),
-                 std::back_inserter(second_cluster_pos),
+                 std::back_inserter(second_cluster_start_pos),
                  [](auto& tp) { return tp->start_pos(); });
-  auto second_center = centroid(second_cluster_pos);
+  m_second_start_pos = centroid(second_cluster_start_pos);
 
   // compute the cluster directions
   std::vector<Vec2> first_cluster_dir;
   std::transform(first_cluster.begin(), first_cluster.end(),
                  std::back_inserter(first_cluster_dir),
                  [](auto& tp) { return tp->direction(); });
-  m_first_direction = centroid(first_cluster_dir);
+  m_direction_first = centroid(first_cluster_dir);
   std::vector<Vec2> second_cluster_dir;
   std::transform(second_cluster.begin(), second_cluster.end(),
                  std::back_inserter(second_cluster_dir),
                  [](auto& tp) { return tp->direction(); });
-  m_second_direction = centroid(second_cluster_dir);
+  m_direction_second = centroid(second_cluster_dir);
 
-  // compute the distance between the clusters
-  m_start_distance = ::distance(first_center, second_center);
+  // store the distance between the start positions of the clusters
+  m_start_distance = ::distance(m_first_start_pos, m_second_start_pos);
 
   // compute the pinch's orientation
   auto ref_vector = Vec2(0.0, 1.0);
-  m_orientation = std::min(angle(ref_vector, second_center - first_center),
-                           angle(ref_vector, first_center - second_center));
+  m_orientation =
+      std::min(angle(ref_vector, m_second_start_pos - m_first_start_pos),
+               angle(ref_vector, m_first_start_pos - m_second_start_pos));
 
-  auto direction = second_center - first_center;
+  auto direction = m_second_start_pos - m_first_start_pos;
   m_horizontal_angle = std::min(::angle(direction, Vec2(1.0, 0.0)),
                                 ::angle(direction, Vec2(-1.0, 0.0)));
   m_vertical_angle = std::min(::angle(direction, Vec2(0.0, 1.0)),
@@ -72,7 +73,7 @@ const std::set<TouchPointPair>& Pinch::touch_point_pairs() const {
   return m_touch_point_pairs;
 }
 
-Vec2 Pinch::first_center() const {
+Vec2 Pinch::first_pos() const {
   std::vector<Vec2> positions;
   auto first_cluster = this->first_cluster();
   std::transform(first_cluster.begin(), first_cluster.end(),
@@ -81,7 +82,7 @@ Vec2 Pinch::first_center() const {
   return ::centroid(positions);
 }
 
-Vec2 Pinch::second_center() const {
+Vec2 Pinch::second_pos() const {
   std::vector<Vec2> positions;
   auto second_cluster = this->second_cluster();
   std::transform(second_cluster.begin(), second_cluster.end(),
@@ -91,11 +92,11 @@ Vec2 Pinch::second_center() const {
 }
 
 Vec2 Pinch::center() const {
-  return ::centroid({first_center(), second_center()});
+  return ::centroid({first_pos(), second_pos()});
 }
 
 double Pinch::distance() const {
-  return ::distance(first_center(), second_center());
+  return ::distance(first_pos(), second_pos());
 }
 
 bool Pinch::horizontal() const {
@@ -118,6 +119,14 @@ uint32_t Pinch::num_fingers() const {
 
 const Vec2& Pinch::start_center() const {
   return m_start_center;
+}
+
+const Vec2& Pinch::first_start_pos() const {
+  return m_first_start_pos;
+}
+
+const Vec2& Pinch::second_start_pos() const {
+  return m_second_start_pos;
 }
 
 double Pinch::start_distance() const {

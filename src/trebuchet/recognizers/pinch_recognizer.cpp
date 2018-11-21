@@ -8,8 +8,12 @@ bool PinchRecognizer::recognize(const std::set<TouchPointPtr>& touch_points) {
   std::set<PinchPtr> pinches;
   for (auto&& tps : iter::combinations(touch_points, 2)) {
     if (angle(tps[0]->velocity(), tps[1]->velocity()) >= MIN_OPPOSING_ANGLE) {
-      std::set<std::pair<TouchPointPtr, TouchPointPtr>> tp_pairs = {
-          std::make_pair(tps[0], tps[1])};
+      std::set<std::pair<TouchPointPtr, TouchPointPtr>> tp_pairs;
+      if (tps[0]->start_pos() < tps[1]->start_pos()) {
+        tp_pairs.emplace(std::make_pair(tps[0], tps[1]));
+      } else {
+        tp_pairs.emplace(std::make_pair(tps[1], tps[0]));
+      }
       pinches.emplace(std::make_shared<Pinch>(tp_pairs));
     }
   }

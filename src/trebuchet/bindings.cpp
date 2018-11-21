@@ -77,12 +77,11 @@ PYBIND11_MODULE(trebuchet, m) {
 
   py::class_<Pinch, std::shared_ptr<Pinch>, Gesture>(m, "Pinch")
       .def_property_readonly(
-          "first_center",
-          [](const Pinch& pinch) { return vec_to_tuple(pinch.first_center()); })
-      .def_property_readonly("second_center",
-                             [](const Pinch& pinch) {
-                               return vec_to_tuple(pinch.second_center());
-                             })
+          "first_pos",
+          [](const Pinch& pinch) { return vec_to_tuple(pinch.first_pos()); })
+      .def_property_readonly(
+          "second_pos",
+          [](const Pinch& pinch) { return vec_to_tuple(pinch.second_pos()); })
       .def_property_readonly(
           "center",
           [](const Pinch& pinch) { return vec_to_tuple(pinch.center()); })
@@ -93,6 +92,14 @@ PYBIND11_MODULE(trebuchet, m) {
       .def_property_readonly(
           "start_center",
           [](const Pinch& pinch) { return vec_to_tuple(pinch.start_center()); })
+      .def_property_readonly("first_start_pos",
+                             [](const Pinch& pinch) {
+                               return vec_to_tuple(pinch.first_start_pos());
+                             })
+      .def_property_readonly("second_start_pos",
+                             [](const Pinch& pinch) {
+                               return vec_to_tuple(pinch.second_start_pos());
+                             })
       .def_property_readonly("start_distance", &Pinch::start_distance);
 
   py::class_<Fling, std::shared_ptr<Fling>, Gesture>(m, "Fling")

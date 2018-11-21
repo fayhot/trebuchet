@@ -21,8 +21,8 @@ class Pinch : public Gesture {
 
   const std::set<TouchPointPair>& touch_point_pairs() const;
 
-  Vec2 first_center() const;
-  Vec2 second_center() const;
+  Vec2 first_pos() const;
+  Vec2 second_pos() const;
   Vec2 center() const;
   double distance() const;
   bool horizontal() const;
@@ -31,6 +31,8 @@ class Pinch : public Gesture {
   uint32_t num_fingers() const;
 
   const Vec2& start_center() const;
+  const Vec2& first_start_pos() const;
+  const Vec2& second_start_pos() const;
   double start_distance() const;
 
  protected:
@@ -43,11 +45,14 @@ class Pinch : public Gesture {
  protected:
   std::set<TouchPointPair> m_touch_point_pairs;
 
-  Vec2 m_first_direction;
-  Vec2 m_second_direction;
+  Vec2 m_direction_first;
+  Vec2 m_direction_second;
 
   Vec2 m_start_center;
+  Vec2 m_first_start_pos;
+  Vec2 m_second_start_pos;
   double m_start_distance;
+
   double m_orientation;
   double m_horizontal_angle;
   double m_vertical_angle;
