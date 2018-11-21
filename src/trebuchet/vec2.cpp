@@ -85,6 +85,22 @@ bool operator!=(const Vec2& lhs, const Vec2& rhs) {
   return !(lhs == rhs);
 }
 
+bool operator<(const Vec2& lhs, const Vec2& rhs) {
+  return lhs.length() < rhs.length();
+}
+
+bool operator>(const Vec2& lhs, const Vec2& rhs) {
+  return rhs < lhs;
+}
+
+bool operator<=(const Vec2& lhs, const Vec2& rhs) {
+  return !(lhs > rhs);
+}
+
+bool operator>=(const Vec2& lhs, const Vec2& rhs) {
+  return !(lhs < rhs);
+}
+
 Vec2 operator+(const Vec2& lhs, const Vec2& rhs) {
   return Vec2(lhs.x + rhs.x, lhs.y + rhs.y);
 }

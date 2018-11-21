@@ -40,6 +40,10 @@ std::ostream& operator<<(std::ostream& stream, const Vec2& vec);
 
 bool operator==(const Vec2& lhs, const Vec2& rhs);
 bool operator!=(const Vec2& lhs, const Vec2& rhs);
+bool operator<(const Vec2& lhs, const Vec2& rhs);
+bool operator>(const Vec2& lhs, const Vec2& rhs);
+bool operator<=(const Vec2& lhs, const Vec2& rhs);
+bool operator>=(const Vec2& lhs, const Vec2& rhs);
 
 Vec2 operator+(const Vec2& lhs, const Vec2& rhs);
 Vec2 operator-(const Vec2& lhs, const Vec2& rhs);
