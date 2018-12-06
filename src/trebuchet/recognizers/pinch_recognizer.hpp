@@ -16,6 +16,7 @@ class PinchRecognizer : public Recognizer {
   PinchRecognizer(const Vec2& screen_resolution, const Vec2& screen_size);
   bool recognize(const std::set<TouchPointPtr>& touch_points) override;
   std::set<GestureEventPair> update() override;
+  bool invalidate_touch_point(const TouchPointPtr& touch_point) override;
 
  protected:
   std::set<GestureEventPair> detect_pinches(

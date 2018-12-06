@@ -33,3 +33,20 @@ std::set<GestureEventPair> PinchRecognizer::update() {
 
   return events;
 }
+
+bool PinchRecognizer::invalidate_touch_point(const TouchPointPtr& touch_point) {
+  bool was_tp_used = false;
+
+  for (auto it = m_pinches.begin(); it != m_pinches.end();) {
+    auto pinch = *it;
+    auto tps = pinch->touch_points();
+    if (tps.find(touch_point) != tps.end()) {
+      was_tp_used = true;
+      it = m_pinches.erase(it);
+    } else {
+      ++it;
+    }
+  }
+
+  return was_tp_used;
+}
