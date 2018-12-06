@@ -4,20 +4,20 @@ LongTapRecognizer::LongTapRecognizer(const Vec2& screen_resolution,
                                      const Vec2& screen_size)
     : Recognizer(screen_resolution, screen_size) {}
 
-bool LongTapRecognizer::recognize(const std::set<TouchPointPtr>& touch_points) {
-  std::set<LongTapPtr> long_taps;
+std::set<TouchPointPtr> LongTapRecognizer::recognize(
+    const std::set<TouchPointPtr>& touch_points) {
+  std::set<TouchPointPtr> used_tps;
 
   for (auto& tp : touch_points) {
     auto dist =
         distance(tuio_to_meters(tp->pos()), tuio_to_meters(tp->start_pos()));
     if (tp->duration() > MIN_DURATION && dist < MAX_DISTANCE) {
-      long_taps.emplace(std::make_shared<LongTap>(tp));
+      used_tps.insert(tp);
+      m_long_taps.emplace(std::make_shared<LongTap>(tp));
     }
   }
 
-  m_long_taps.insert(long_taps.begin(), long_taps.end());
-
-  return !long_taps.empty();
+  return used_tps;
 }
 
 std::set<GestureEventPair> LongTapRecognizer::update() {

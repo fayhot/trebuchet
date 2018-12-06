@@ -15,7 +15,7 @@ using GestureEventPair = std::pair<GesturePtr, GestureEvent>;
 class TapRecognizer : public Recognizer {
  public:
   TapRecognizer(const Vec2& screen_resolution, const Vec2& screen_size);
-  bool recognize(const std::set<TouchPointPtr>& touch_points) override;
+  std::set<TouchPointPtr> recognize(const std::set<TouchPointPtr>& touch_points) override;
   std::set<GestureEventPair> update() override;
   bool invalidate_touch_point(const TouchPointPtr& touch_point) override;
 

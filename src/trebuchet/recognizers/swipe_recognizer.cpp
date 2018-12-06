@@ -4,23 +4,23 @@ SwipeRecognizer::SwipeRecognizer(const Vec2& screen_resolution,
                                  const Vec2& screen_size)
     : Recognizer(screen_resolution, screen_size) {}
 
-bool SwipeRecognizer::recognize(const std::set<TouchPointPtr>& touch_points) {
-  std::set<SwipePtr> swipes;
+std::set<TouchPointPtr> SwipeRecognizer::recognize(
+    const std::set<TouchPointPtr>& touch_points) {
+  std::set<TouchPointPtr> used_tps;
   for (auto& tp : touch_points) {
     if (m_possible_swipes_tps.find(tp) == m_possible_swipes_tps.end()) {
       auto travel = (tp->travel() * m_screen_size).length();  // in m
       auto max_velocity =
           tuio_to_meters(tp->max_velocity()).length();  // in m/s
       if (travel >= MIN_TRAVEL && max_velocity <= MAX_VELOCITY) {
-        swipes.emplace(std::make_shared<Swipe>(tp));
+        used_tps.insert(tp);
+        m_possible_swipes.emplace(std::make_shared<Swipe>(tp));
         m_possible_swipes_tps.insert(tp);
       }
     }
   }
 
-  m_possible_swipes.insert(swipes.begin(), swipes.end());
-
-  return !swipes.empty();
+  return used_tps;
 }
 
 std::set<GestureEventPair> SwipeRecognizer::update() {

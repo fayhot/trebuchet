@@ -4,8 +4,9 @@ TapRecognizer::TapRecognizer(const Vec2& screen_resolution,
                              const Vec2& screen_size)
     : Recognizer(screen_resolution, screen_size) {}
 
-bool TapRecognizer::recognize(const std::set<TouchPointPtr>& touch_points) {
-  std::set<TapPtr> taps;
+std::set<TouchPointPtr> TapRecognizer::recognize(
+    const std::set<TouchPointPtr>& touch_points) {
+  std::set<TouchPointPtr> used_tps;
   std::vector<TouchPointPtr> tps;
   std::set_difference(touch_points.begin(), touch_points.end(),
                       m_used_touch_points.begin(), m_used_touch_points.end(),
@@ -15,13 +16,13 @@ bool TapRecognizer::recognize(const std::set<TouchPointPtr>& touch_points) {
         distance(tuio_to_meters(tp->pos()), tuio_to_meters(tp->start_pos()));
     if (tp->finished() && tp->duration() < TAP_MAX_DURATION &&
         dist < TAP_MAX_DISTANCE) {
-      taps.emplace(std::make_shared<Tap>(tp));
+      used_tps.insert(tp);
+      m_taps.emplace(std::make_shared<Tap>(tp));
       m_used_touch_points.insert(tp);
     }
   }
 
-  m_taps.insert(taps.begin(), taps.end());
-  return !taps.empty();
+  return used_tps;
 }
 
 std::set<GestureEventPair> TapRecognizer::update() {

@@ -4,11 +4,13 @@ FlingRecognizer::FlingRecognizer(const Vec2& screen_resolution,
                                  const Vec2& screen_size)
     : Recognizer(screen_resolution, screen_size) {}
 
-bool FlingRecognizer::recognize(const std::set<TouchPointPtr>& touch_points) {
-  std::set<FlingPtr> flings;
+std::set<TouchPointPtr> FlingRecognizer::recognize(
+    const std::set<TouchPointPtr>& touch_points) {
+  std::set<TouchPointPtr> used_tps;
   for (auto& tp : touch_points) {
     // check if the conditions of a fling are met
     if (tuio_to_meters(tp->velocity()).length() >= MIN_VELOCITY) {
+      used_tps.insert(tp);
       bool part_of_other_fling = false;
       // check if this fling is part of another fling
       for (auto& fling : m_flings) {
@@ -25,14 +27,12 @@ bool FlingRecognizer::recognize(const std::set<TouchPointPtr>& touch_points) {
       // create a new fling gesture if this touch point was not part of
       // another fling
       if (!part_of_other_fling) {
-        flings.emplace(std::make_shared<Fling>(tp));
+        m_flings.emplace(std::make_shared<Fling>(tp));
       }
     }
   }
 
-  m_flings.insert(flings.begin(), flings.end());
-
-  return !flings.empty();
+  return used_tps;
 }
 
 std::set<GestureEventPair> FlingRecognizer::update() {

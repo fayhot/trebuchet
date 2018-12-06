@@ -143,7 +143,10 @@ void Application::end_bundle(int32_t fseq) {
   m_gestures_mutex.lock();
 
   for (auto& recognizer : m_recognizers) {
-    recognizer->recognize(m_unhandled_tps);
+    auto used_tps = recognizer->recognize(m_unhandled_tps);
+    for (auto& tp : used_tps) {
+      m_unhandled_tps.erase(tp);
+    }
   }
 
   cleanup_inactive_touch_points();
