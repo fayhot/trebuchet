@@ -69,40 +69,43 @@ void Application::start() {
 }
 
 std::vector<GestureEventPair> Application::update() {
-  m_tp_mutex.lock();
-
-  for (auto& gesture : m_active_gestures) {
-    gesture->update();
-  }
-
-  for (auto& recognizer : m_recognizers) {
-    for (auto & [ gesture, event ] : recognizer->update()) {
-      if (event == GestureEvent::START || event == GestureEvent::TRIGGER) {
-        for (auto& tp : gesture->touch_points()) {
-          for (auto& other_recognizer : m_recognizers) {
-            if (other_recognizer != recognizer) {
-              other_recognizer->invalidate_touch_point(tp);
-            }
-          }
-          m_unhandled_tps.erase(tp);
-        }
-      }
-      add_gesture_event(gesture, event);
+  {
+    std::lock_guard<std::mutex> gestures_guard(m_gestures_mutex);
+    for (auto& gesture : m_active_gestures) {
+      gesture->update();
     }
   }
 
-  remove_finished_gestures();
-  m_tp_mutex.unlock();
+  {
+    std::lock_guard<std::mutex> tp_guard(m_tp_mutex);
+    std::lock_guard<std::mutex> gestures_guard(m_gestures_mutex);
+    for (auto& recognizer : m_recognizers) {
+      for (auto & [ gesture, event ] : recognizer->update()) {
+        if (event == GestureEvent::START || event == GestureEvent::TRIGGER) {
+          for (auto& tp : gesture->touch_points()) {
+            for (auto& other_recognizer : m_recognizers) {
+              if (other_recognizer != recognizer) {
+                other_recognizer->invalidate_touch_point(tp);
+              }
+            }
+            m_unhandled_tps.erase(tp);
+          }
+        }
+        add_gesture_event(gesture, event);
+      }
+    }
 
-  m_gestures_mutex.lock();
+    remove_finished_gestures();
+  }
+
+  std::lock_guard<std::mutex> gestures_guard(m_gestures_mutex);
   std::vector<GestureEventPair> gesture_events(std::move(m_gesture_events));
   m_gesture_events.clear();
-  m_gestures_mutex.unlock();
   return gesture_events;
 }
 
 void Application::start_bundle(const std::set<uint32_t>& alive_ids) {
-  m_tp_mutex.lock();
+  std::lock_guard<std::mutex> tp_guard(m_tp_mutex);
   // remove the touch points that are not alive anymore
   for (auto it = m_touch_points.begin(); it != m_touch_points.end();) {
     if (alive_ids.find(it->first) == alive_ids.end()) {
@@ -116,14 +119,13 @@ void Application::start_bundle(const std::set<uint32_t>& alive_ids) {
       ++it;
     }
   }
-  m_tp_mutex.unlock();
 }
 
 void Application::set_cursor(int32_t id,
                              const Vec2& pos,
                              const Vec2& velocity,
                              float acceleration) {
-  m_tp_mutex.lock();
+  std::lock_guard<std::mutex> tp_guard(m_tp_mutex);
   auto it = m_touch_points.find(id);
   if (it == m_touch_points.end()) {
     // add new touch point
@@ -135,12 +137,11 @@ void Application::set_cursor(int32_t id,
     auto tp = m_touch_points.at(id);
     tp->update(pos, velocity, acceleration);
   }
-  m_tp_mutex.unlock();
 }
 
 void Application::end_bundle(int32_t fseq) {
-  m_tp_mutex.lock();
-  m_gestures_mutex.lock();
+  std::lock_guard<std::mutex> tp_guard(m_tp_mutex);
+  std::lock_guard<std::mutex> gestures_guard(m_gestures_mutex);
 
   for (auto& recognizer : m_recognizers) {
     auto used_tps = recognizer->recognize(m_unhandled_tps);
@@ -150,9 +151,6 @@ void Application::end_bundle(int32_t fseq) {
   }
 
   cleanup_inactive_touch_points();
-
-  m_gestures_mutex.unlock();
-  m_tp_mutex.unlock();
 }
 
 void Application::cleanup_inactive_touch_points() {
