@@ -12,7 +12,6 @@ bool LongTapRecognizer::recognize(const std::set<TouchPointPtr>& touch_points) {
         distance(tuio_to_meters(tp->pos()), tuio_to_meters(tp->start_pos()));
     if (tp->duration() > MIN_DURATION && dist < MAX_DISTANCE) {
       long_taps.emplace(std::make_shared<LongTap>(tp));
-      invalidate_touch_point(tp);
     }
   }
 
