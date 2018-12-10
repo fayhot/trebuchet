@@ -195,6 +195,6 @@ Vec2 flip(const Vec2& vec) {
 }
 
 Vec2 centroid(const std::vector<Vec2>& vectors) {
-  return std::accumulate(vectors.begin(), vectors.end(), Vec2()) /
+  return std::accumulate(vectors.begin(), vectors.end(), Vec2(0.0, 0.0)) /
          vectors.size();
 }
