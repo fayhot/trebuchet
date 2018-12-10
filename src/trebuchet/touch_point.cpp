@@ -59,8 +59,8 @@ void TouchPoint::update(const Vec2& pos,
   m_update_time = Clock::now();
   m_pos = pos;
   m_velocity = velocity;
-  m_max_velocity = Vec2(std::max(m_max_velocity.x, m_velocity.x),
-                        std::max(m_max_velocity.y, m_velocity.y));
+  m_max_velocity = Vec2(std::max(m_max_velocity.x, std::abs(m_velocity.x)),
+                        std::max(m_max_velocity.y, std::abs(m_velocity.y)));
   m_acceleration = acceleration;
   if (pos != m_positions.back()) {
     m_travel += Vec2(std::abs(m_positions.back().x - pos.x),
