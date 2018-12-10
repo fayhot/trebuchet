@@ -11,6 +11,7 @@ TouchPoint::TouchPoint(int32_t id,
       m_start_pos(pos),
       m_pos(pos),
       m_velocity(velocity),
+      m_max_velocity(0.0, 0.0),
       m_acceleration(acceleration),
       m_positions({pos}),
       m_travel(0.0, 0.0) {}
