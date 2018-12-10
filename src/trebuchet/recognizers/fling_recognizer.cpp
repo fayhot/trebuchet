@@ -9,14 +9,16 @@ std::set<TouchPointPtr> FlingRecognizer::recognize(
   std::set<TouchPointPtr> used_tps;
   for (auto& tp : touch_points) {
     // check if the conditions of a fling are met
-    if (tuio_to_meters(tp->velocity()).length() >= MIN_VELOCITY) {
+    if (tp->duration() > MIN_DURATION &&
+        tuio_to_meters(tp->max_velocity()).length() >= MIN_VELOCITY) {
       used_tps.insert(tp);
       bool part_of_other_fling = false;
       // check if this fling is part of another fling
       for (auto& fling : m_flings) {
-        if (angle(fling->velocity(), tp->velocity()) < MAX_ANGLE_DIFF &&
-            distance(tuio_to_meters(fling->pos()), tuio_to_meters(tp->pos())) <
-                MAX_DISTANCE) {
+        auto delta_angle = angle(fling->direction(), tp->direction());
+        auto dist =
+            distance(tuio_to_meters(fling->pos()), tuio_to_meters(tp->pos()));
+        if (delta_angle < MAX_ANGLE_DIFF && dist < MAX_DISTANCE) {
           if (fling->add_touch_point(tp)) {
             part_of_other_fling = true;
             break;
