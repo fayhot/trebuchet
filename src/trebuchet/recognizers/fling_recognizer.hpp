@@ -22,7 +22,7 @@ class FlingRecognizer : public Recognizer {
   const std::chrono::milliseconds MIN_DURATION{100};
   const double MIN_VELOCITY{0.3};           // in m/s
   const double MAX_ANGLE_DIFF{0.5 * M_PI};  // in rad
-  const double MAX_DISTANCE{0.1};           // in m
+  const double MAX_DISTANCE{0.2};           // in m
 
  protected:
   std::set<FlingPtr> m_flings;

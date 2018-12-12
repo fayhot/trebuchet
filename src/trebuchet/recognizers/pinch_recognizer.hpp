@@ -14,7 +14,8 @@ using GestureEventPair = std::pair<GesturePtr, GestureEvent>;
 class PinchRecognizer : public Recognizer {
  public:
   PinchRecognizer(const Vec2& screen_resolution, const Vec2& screen_size);
-  std::set<TouchPointPtr> recognize(const std::set<TouchPointPtr>& touch_points) override;
+  std::set<TouchPointPtr> recognize(
+      const std::set<TouchPointPtr>& touch_points) override;
   std::set<GestureEventPair> update() override;
   bool invalidate_touch_point(const TouchPointPtr& touch_point) override;
 
@@ -23,7 +24,8 @@ class PinchRecognizer : public Recognizer {
       const std::set<TouchPointPtr>& touch_points);
 
  protected:
-  const double MIN_OPPOSING_ANGLE{0.8 * M_PI};  // in rad
+  const std::chrono::milliseconds MIN_DURATION{100};
+  const double MIN_OPPOSING_ANGLE{0.6 * M_PI};  // in rad
 
  protected:
   std::set<PinchPtr> m_pinches;

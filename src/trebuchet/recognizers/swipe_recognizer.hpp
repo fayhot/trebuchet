@@ -22,7 +22,7 @@ class SwipeRecognizer : public Recognizer {
 
  protected:
   const std::chrono::milliseconds MIN_DURATION{500};
-  const double MIN_TRAVEL{0.01};   // in m
+  const double MIN_TRAVEL{0.02};   // in m
   const double MAX_VELOCITY{0.3};  // in m/s
 
  protected:
