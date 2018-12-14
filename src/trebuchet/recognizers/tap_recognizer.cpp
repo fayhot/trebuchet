@@ -14,8 +14,8 @@ std::set<TouchPointPtr> TapRecognizer::recognize(
   for (auto& tp : tps) {
     auto dist =
         distance(tuio_to_meters(tp->pos()), tuio_to_meters(tp->start_pos()));
-    if (tp->finished() && tp->duration() < TAP_MAX_DURATION &&
-        dist < TAP_MAX_DISTANCE) {
+    if (tp->finished() && tp->duration() >= TAP_MIN_DURATION &&
+        tp->duration() < TAP_MAX_DURATION && dist < TAP_MAX_DISTANCE) {
       used_tps.insert(tp);
       m_taps.emplace(std::make_shared<Tap>(tp));
       m_used_touch_points.insert(tp);
