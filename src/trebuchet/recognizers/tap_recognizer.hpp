@@ -29,8 +29,8 @@ class TapRecognizer : public Recognizer {
   const std::chrono::milliseconds TAP_MAX_DURATION{300};
   const double TAP_MAX_DISTANCE{0.01};  // in m
 
-  const double DOUBLE_TAP_MAX_DISTANCE{0.02};  // in m
-  const std::chrono::milliseconds DOUBLE_TAP_MAX_PAUSE{200};
+  const double DOUBLE_TAP_MAX_DISTANCE{0.03};  // in m
+  const std::chrono::milliseconds DOUBLE_TAP_MAX_PAUSE{300};
 
  protected:
   std::set<TapPtr> m_taps;
